@@ -6,6 +6,7 @@ from ui.analytics_page import AnalyticsPage
 from ui.reports_page import ReportsPage
 from ui.settings_page import SettingsPage
 
+from ui.admin.login_page import AdminLoginPage
 from ui.admin.dashboard import AdminDashboard
 from ui.teacher.login_page import TeacherLoginPage
 from ui.student.preview_page import StudentPreviewPage
@@ -169,7 +170,8 @@ class MainWindow(ctk.CTk):
     # ==========================
     def show_admin_dashboard(self):
         self.clear_page()
-        AdminDashboard(self.content).pack(
+
+        AdminLoginPage(self.content).pack(
             fill="both",
             expand=True
         )
@@ -180,6 +182,7 @@ class MainWindow(ctk.CTk):
             fill="both",
             expand=True
         )
+
 
     def show_student_preview(self):
         self.clear_page()

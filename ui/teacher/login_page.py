@@ -1,31 +1,24 @@
-import customtkinter as ctk
+from ui.components.login_template import LoginTemplate
 
 
-class TeacherLoginPage(ctk.CTkFrame):
+class TeacherLoginPage(LoginTemplate):
 
     def __init__(self, parent):
+
         super().__init__(
-            parent,
-            fg_color="#071224"
+            parent=parent,
+            role_name="Teacher",
+            accent_color="#EF4444",
+            accent_hover="#DC2626",
+            accent_bg="#7F1D1D",
+            icon_path="assets/icons/teacher2.png",
+            hero_title="Welcome.",
+            hero_subtitle="Access your classroom securely",
+            login_command=self.login
         )
 
-        self.build_ui()
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
 
-    def build_ui(self):
-
-        title = ctk.CTkLabel(
-            self,
-            text="Teacher Login",
-            font=("Segoe UI", 42, "bold")
-        )
-        title.pack(
-            pady=(60, 10)
-        )
-
-        subtitle = ctk.CTkLabel(
-            self,
-            text="Login to manage your classes",
-            font=("Segoe UI", 18),
-            text_color="#94A3B8"
-        )
-        subtitle.pack()
+        print("Teacher Login:", username, password)
