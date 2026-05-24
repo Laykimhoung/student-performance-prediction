@@ -64,7 +64,81 @@ This project is powered by the following technologies:
 | Plotly | Interactive Charts |
 | ReportLab | PDF Report Generation |
 | Pillow | Image Processing |
-| PyInstaller | Build Desktop Executable |
+
+---
+## 🚀 Installation & Setup
+
+Follow these steps to run EduVision AI locally.
+
+### Step 1 — Clone the Repository
+
+```bash
+git clone https://github.com/Laykimhoung/EduVision-AI
+```
+
+---
+
+### Step 2 — Create a Virtual Environment
+
+Create a local Python virtual environment:
+
+```bash
+cd EduVision-AI
+python -m venv .venv
+```
+
+
+---
+
+### Step 3 — Activate the Virtual Environment
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+After activation, your terminal should look similar to:
+
+```txt
+(.venv) C:\EduVision-AI>
+```
+
+---
+
+### Step 4 — Install Required Libraries
+
+Install all project dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+This automatically installs:
+
+- CustomTkinter
+- Pandas
+- Scikit-learn
+- Matplotlib
+- Plotly
+- ReportLab
+- Pillow
+
+---
+
+### Step 5 — Run the Application
+
+Start EduVision AI:
+
+```bash
+python app.py
+```
 
 ---
 
