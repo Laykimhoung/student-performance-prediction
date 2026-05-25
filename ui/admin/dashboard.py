@@ -1,193 +1,157 @@
+from ui.components.dashboard_shell import DashboardShell
 import customtkinter as ctk
 
 
-class AdminDashboard(ctk.CTkFrame):
+class AdminDashboard(DashboardShell):
 
     def __init__(self, parent):
+
         super().__init__(
             parent,
-            fg_color="#071224"
+            role_name="Admin",
+            accent_color="#3B82F6",
+            menu_items=[
+                "Dashboard",
+                "Students",
+                "Teachers",
+                "Analytics",
+                "Reports",
+                "Settings"
+            ]
         )
 
-        self.build_ui()
+        self.build_dashboard()
 
-    def build_ui(self):
+    def build_dashboard(self):
 
         # ==================================
         # HEADER
         # ==================================
-        header = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-        header.pack(
-            fill="x",
-            padx=40,
-            pady=(40, 20)
-        )
-
         title = ctk.CTkLabel(
-            header,
+            self.content,
             text="Admin Dashboard",
             font=("Segoe UI", 42, "bold")
         )
-        title.pack(anchor="w")
+
+        title.grid(
+            row=0,
+            column=0,
+            columnspan=4,
+            sticky="w",
+            pady=(20, 5)
+        )
 
         subtitle = ctk.CTkLabel(
-            header,
+            self.content,
             text="Manage teachers, classes and analytics",
             font=("Segoe UI", 18),
             text_color="#94A3B8"
         )
-        subtitle.pack(anchor="w")
+
+        subtitle.grid(
+            row=1,
+            column=0,
+            columnspan=4,
+            sticky="w",
+            pady=(0, 35)
+        )
 
         # ==================================
-        # STATS CARDS
+        # STATS
         # ==================================
-        stats_container = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-        stats_container.pack(
-            fill="x",
-            padx=40,
-            pady=(0, 30)
-        )
-
-        stats_container.grid_columnconfigure(
-            (0, 1, 2, 3),
-            weight=1
-        )
-
         stats = [
-            ("1,540", "Students", "#3B82F6"),
-            ("38", "Teachers", "#EF4444"),
-            ("16", "Classes", "#8B5CF6"),
-            ("92%", "Attendance", "#10B981")
+            ("1,540", "Students"),
+            ("38", "Teachers"),
+            ("16", "Classes"),
+            ("92%", "Attendance")
         ]
 
-        for i, (number, label, color) in enumerate(stats):
+        for i, (value, label) in enumerate(stats):
 
             card = ctk.CTkFrame(
-                stats_container,
-                corner_radius=30,
+                self.content,
                 fg_color="#0F172A",
-                border_width=1,
-                border_color="#1E293B",
-                height=180
+                corner_radius=28,
+                height=170
             )
 
             card.grid(
-                row=0,
+                row=2,
                 column=i,
-                padx=12,
-                sticky="nsew"
+                sticky="nsew",
+                padx=12
             )
 
-            accent = ctk.CTkFrame(
+            num = ctk.CTkLabel(
                 card,
-                height=6,
-                fg_color=color,
-                corner_radius=100
-            )
-            accent.pack(
-                fill="x",
-                padx=24,
-                pady=(24, 25)
+                text=value,
+                font=("Segoe UI", 36, "bold"),
+                text_color="#3B82F6"
             )
 
-            num_label = ctk.CTkLabel(
-                card,
-                text=number,
-                font=("Segoe UI", 34, "bold"),
-                text_color=color
-            )
-            num_label.pack()
+            num.pack(pady=(42, 8))
 
-            text_label = ctk.CTkLabel(
+            txt = ctk.CTkLabel(
                 card,
                 text=label,
-                font=("Segoe UI", 17),
+                font=("Segoe UI", 18),
                 text_color="#94A3B8"
             )
-            text_label.pack(pady=(5, 20))
 
-        # ==================================
-        # LOWER GRID
-        # ==================================
-        lower = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-
-        lower.pack(
-            fill="both",
-            expand=True,
-            padx=40,
-            pady=(0, 40)
-        )
-
-        lower.grid_columnconfigure(
-            (0, 1),
-            weight=1
-        )
-
-        lower.grid_rowconfigure(
-            0,
-            weight=1
-        )
+            txt.pack()
 
         # ==================================
         # QUICK ACTIONS
         # ==================================
         quick_actions = ctk.CTkFrame(
-            lower,
+            self.content,
             fg_color="#0F172A",
-            corner_radius=30,
-            border_width=1,
-            border_color="#1E293B"
+            corner_radius=30
         )
 
         quick_actions.grid(
-            row=0,
+            row=3,
             column=0,
-            padx=(0, 12),
-            sticky="nsew"
+            columnspan=2,
+            sticky="nsew",
+            padx=12,
+            pady=25
         )
 
-        qa_title = ctk.CTkLabel(
+        quick_title = ctk.CTkLabel(
             quick_actions,
             text="Quick Actions",
-            font=("Segoe UI", 28, "bold")
+            font=("Segoe UI", 26, "bold")
         )
-        qa_title.pack(
+
+        quick_title.pack(
             anchor="w",
-            padx=30,
-            pady=(28, 25)
+            padx=25,
+            pady=(25, 20)
         )
 
         actions = [
-            ("Add Teacher", "#EF4444"),
-            ("Create Class", "#3B82F6"),
-            ("Generate Report", "#8B5CF6"),
-            ("View Analytics", "#10B981")
+            "Add Student",
+            "Manage Teachers",
+            "Generate Report",
+            "Open Analytics"
         ]
 
-        for action, color in actions:
+        for action in actions:
 
             btn = ctk.CTkButton(
                 quick_actions,
                 text=action,
-                height=54,
+                height=52,
                 corner_radius=18,
-                fg_color=color,
-                hover_color=color,
+                fg_color="#3B82F6",
+                hover_color="#2563EB",
                 font=("Segoe UI", 16, "bold")
             )
 
             btn.pack(
                 fill="x",
-                padx=30,
+                padx=25,
                 pady=8
             )
 
@@ -195,62 +159,50 @@ class AdminDashboard(ctk.CTkFrame):
         # RECENT ACTIVITY
         # ==================================
         activity = ctk.CTkFrame(
-            lower,
+            self.content,
             fg_color="#0F172A",
-            corner_radius=30,
-            border_width=1,
-            border_color="#1E293B"
+            corner_radius=30
         )
 
         activity.grid(
-            row=0,
-            column=1,
-            padx=(12, 0),
-            sticky="nsew"
+            row=3,
+            column=2,
+            columnspan=2,
+            sticky="nsew",
+            padx=12,
+            pady=25
         )
 
         activity_title = ctk.CTkLabel(
             activity,
             text="Recent Activity",
-            font=("Segoe UI", 28, "bold")
+            font=("Segoe UI", 26, "bold")
         )
+
         activity_title.pack(
             anchor="w",
-            padx=30,
-            pady=(28, 25)
+            padx=25,
+            pady=(25, 20)
         )
 
         activities = [
-            "Teacher added to Class A",
-            "Attendance report exported",
-            "Admin created new class",
-            "Prediction updated",
-            "Student performance monitored"
+            "• Teacher added Class A",
+            "• Student report generated",
+            "• Prediction model updated",
+            "• Analytics exported"
         ]
 
         for item in activities:
 
-            row = ctk.CTkFrame(
-                activity,
-                fg_color="#111827",
-                corner_radius=16
-            )
-
-            row.pack(
-                fill="x",
-                padx=25,
-                pady=8
-            )
-
             label = ctk.CTkLabel(
-                row,
-                text=f"• {item}",
-                font=("Segoe UI", 16),
+                activity,
+                text=item,
+                font=("Segoe UI", 18),
                 text_color="#CBD5E1"
             )
 
             label.pack(
                 anchor="w",
-                padx=18,
-                pady=16
+                padx=25,
+                pady=8
             )

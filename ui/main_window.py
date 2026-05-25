@@ -31,6 +31,8 @@ class MainWindow(ctk.CTk):
 
         self.configure(fg_color="#0B1120")
 
+        self.dashboard_container = None
+
         self.build_ui()
 
     # ==========================================
@@ -162,12 +164,41 @@ class MainWindow(ctk.CTk):
         )
 
     # ==========================================
+    # RESTORE GLOBAL LAYOUT
+    # ==========================================
+    def restore_main_layout(self):
+
+        # Remove dashboard shell
+        if self.dashboard_container:
+            self.dashboard_container.destroy()
+            self.dashboard_container = None
+
+        # Restore sidebar
+        self.sidebar.grid(
+            row=0,
+            column=0,
+            sticky="ns"
+        )
+
+        # Restore content
+        self.content.grid(
+            row=0,
+            column=1,
+            sticky="nsew"
+        )
+
+    # ==========================================
     # DEFAULT PAGES
     # ==========================================
     def show_dashboard(self):
+
+        self.restore_main_layout()
         self.show_page(DashboardPage)
 
     def show_role_selection(self):
+
+        self.restore_main_layout()
+
         self.clear_page()
 
         RoleSelectionPage(
@@ -176,34 +207,73 @@ class MainWindow(ctk.CTk):
         ).pack(fill="both", expand=True)
 
     def show_analytics(self):
+
+        self.restore_main_layout()
         self.show_page(AnalyticsPage)
 
     def show_reports(self):
+
+        self.restore_main_layout()
         self.show_page(ReportsPage)
 
     def show_settings(self):
+
+        self.restore_main_layout()
         self.show_page(SettingsPage)
 
     # ==========================================
     # LOGIN ROUTES
     # ==========================================
     def show_admin_login(self):
+
+        self.restore_main_layout()
         self.show_page(AdminLoginPage)
 
     def show_teacher_login(self):
+
+        self.restore_main_layout()
         self.show_page(TeacherLoginPage)
 
     def show_student_preview(self):
+
+        self.restore_main_layout()
         self.show_page(StudentPreviewPage)
 
     # ==========================================
     # DASHBOARD ROUTES
     # ==========================================
     def show_admin_dashboard(self):
-        self.show_page(AdminDashboard)
+
+        # Hide old layout
+        self.sidebar.grid_forget()
+        self.content.grid_forget()
+
+        # Remove old dashboard
+        if self.dashboard_container:
+            self.dashboard_container.destroy()
+
+        # Show admin dashboard
+        self.dashboard_container = AdminDashboard(self)
+
+        self.dashboard_container.pack(
+            fill="both",
+            expand=True
+        )
 
     def show_teacher_dashboard(self):
-        self.show_page(TeacherDashboard)
+
+        self.sidebar.grid_forget()
+        self.content.grid_forget()
+
+        if self.dashboard_container:
+            self.dashboard_container.destroy()
+
+        self.dashboard_container = TeacherDashboard(self)
+
+        self.dashboard_container.pack(
+            fill="both",
+            expand=True
+        )
 
     # ==========================================
     # THEME TOGGLE
