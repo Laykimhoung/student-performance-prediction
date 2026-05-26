@@ -1,4 +1,4 @@
-# 🎓 Student Performance Prediction
+# 🎓 EduVision AI — Student Performance Prediction System
 
 > An AI-powered Student Management System for Academic Performance Monitoring and Early Intervention
 
@@ -10,7 +10,7 @@
 
 ## 📌 Project Overview
 
-**Student Performance Prediction** is a modern desktop-based student management system designed to monitor academic performance, predict at-risk students, and recommend intervention strategies using Artificial Intelligence.
+**EduVision AI** is a modern desktop-based student management system designed to monitor academic performance, predict at-risk students, and recommend intervention strategies using Artificial Intelligence.
 
 The project is inspired by modern educational analytics systems and research on AI-enhanced student performance monitoring.
 
@@ -31,7 +31,7 @@ This project is currently **under development** and continuously improving.
 
 > **Work In Progress (WIP)**
 
-**Student Performance Prediction** is actively being developed.
+**EduVision AI** is actively being developed.
 
 Current development focus includes:
 
@@ -70,7 +70,7 @@ This project is powered by the following technologies:
 ---
 ## 🚀 Installation & Setup
 
-Follow these steps to run **Student Performance Prediction** locally.
+Follow these steps to run **EduVision AI** locally.
 
 ### Step 1 — Clone the Repository
 
@@ -138,7 +138,7 @@ This automatically installs:
 
 ### Step 5 — Run the Application
 
-Start **Student Performance Prediction**:
+Start **EduVision AI**:
 
 ```bash
 python app.py
@@ -181,7 +181,7 @@ python app.py
 
 ## 🤖 AI Features
 
-**Student Performance Prediction** uses machine learning techniques to:
+**EduVision AI** uses machine learning techniques to:
 
 - Predict academic risk levels
 - Detect weak academic performance
