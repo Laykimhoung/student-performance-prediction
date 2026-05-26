@@ -37,7 +37,7 @@ class StudentDetailPage(ctk.CTkFrame):
         )
 
         # ==================================
-        # TOP BAR
+        # TOP HEADER (FIXED)
         # ==================================
         top_bar = ctk.CTkFrame(
             scroll_page,
@@ -47,50 +47,50 @@ class StudentDetailPage(ctk.CTkFrame):
         top_bar.pack(
             fill="x",
             padx=35,
-            pady=(25, 5)
+            pady=(25, 10)
         )
 
-        back_btn = ctk.CTkButton(
+        # LEFT SIDE
+        title_frame = ctk.CTkFrame(
             top_bar,
-            text="← Back to Students",
-            width=180,
-            height=42,
-            corner_radius=14,
-            fg_color="#EF4444",
-            hover_color="#DC2626",
-            command=self.back_command
+            fg_color="transparent"
         )
 
-        back_btn.pack(
-            side="right"
+        title_frame.pack(
+            side="left"
         )
 
-        # ==================================
-        # HEADER
-        # ==================================
         title = ctk.CTkLabel(
-            scroll_page,
+            title_frame,
             text="Student Profile",
             font=("Segoe UI", 40, "bold")
         )
 
-        title.pack(
-            anchor="w",
-            padx=35
-        )
+        title.pack(anchor="w")
 
         subtitle = ctk.CTkLabel(
-            scroll_page,
+            title_frame,
             text="Monitor academic performance and risk prediction",
             font=("Segoe UI", 17),
             text_color="#94A3B8"
         )
 
-        subtitle.pack(
-            anchor="w",
-            padx=35,
-            pady=(0, 20)
+        subtitle.pack(anchor="w")
+
+        # RIGHT SIDE BACK BUTTON
+        back_btn = ctk.CTkButton(
+            top_bar,
+            text="← Back",
+            width=140,
+            height=46,
+            corner_radius=16,
+            fg_color="#EF4444",
+            hover_color="#DC2626",
+            font=("Segoe UI", 16, "bold"),
+            command=self.back_command
         )
+
+        back_btn.pack(side="right")
 
         # ==================================
         # BODY
@@ -244,13 +244,11 @@ class StudentDetailPage(ctk.CTkFrame):
                 pady=6
             )
 
-            left = ctk.CTkLabel(
+            ctk.CTkLabel(
                 row,
                 text=key,
                 font=("Segoe UI", 16)
-            )
-
-            left.pack(
+            ).pack(
                 side="left",
                 padx=20,
                 pady=16
@@ -263,14 +261,12 @@ class StudentDetailPage(ctk.CTkFrame):
             else:
                 color = "#10B981"
 
-            right = ctk.CTkLabel(
+            ctk.CTkLabel(
                 row,
                 text=str(value),
                 font=("Segoe UI", 16, "bold"),
                 text_color=color
-            )
-
-            right.pack(
+            ).pack(
                 side="right",
                 padx=20
             )
@@ -333,7 +329,6 @@ class StudentDetailPage(ctk.CTkFrame):
             pady=25
         )
 
-        # RISK FACTORS
         factor_title = ctk.CTkLabel(
             right_panel,
             text="Risk Factors",
@@ -348,20 +343,17 @@ class StudentDetailPage(ctk.CTkFrame):
 
         for factor in student["risk_factors"]:
 
-            lbl = ctk.CTkLabel(
+            ctk.CTkLabel(
                 right_panel,
                 text=factor,
                 font=("Segoe UI", 16),
                 text_color="#CBD5E1"
-            )
-
-            lbl.pack(
+            ).pack(
                 anchor="w",
                 padx=25,
                 pady=6
             )
 
-        # RECOMMENDATION
         recommendation_card = ctk.CTkFrame(
             right_panel,
             fg_color="#111827",

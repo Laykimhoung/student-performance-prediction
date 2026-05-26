@@ -3,11 +3,19 @@ import customtkinter as ctk
 
 class AnalyticsPage(ctk.CTkFrame):
 
-    def __init__(self, parent):
+    def __init__(
+            self,
+            parent,
+            class_data=None,
+            back_command=None
+    ):
         super().__init__(
             parent,
             fg_color="#071224"
         )
+
+        self.class_data = class_data
+        self.back_command = back_command
 
         self.build_ui()
 
@@ -15,33 +23,6 @@ class AnalyticsPage(ctk.CTkFrame):
 
         # ==================================
         # HEADER
-        # ==================================
-        title = ctk.CTkLabel(
-            self,
-            text="Analytics & Risk Prediction",
-            font=("Segoe UI", 40, "bold")
-        )
-
-        title.pack(
-            anchor="w",
-            padx=35,
-            pady=(25, 5)
-        )
-
-        subtitle = ctk.CTkLabel(
-            self,
-            text="Analyze student performance and identify intervention needs",
-            font=("Segoe UI", 17),
-            text_color="#94A3B8"
-        )
-
-        subtitle.pack(
-            anchor="w",
-            padx=35
-        )
-
-        # ==================================
-        # TOP BAR
         # ==================================
         top_bar = ctk.CTkFrame(
             self,
@@ -51,29 +32,121 @@ class AnalyticsPage(ctk.CTkFrame):
         top_bar.pack(
             fill="x",
             padx=35,
-            pady=25
+            pady=(25, 10)
         )
 
-        class_dropdown = ctk.CTkComboBox(
+        title_frame = ctk.CTkFrame(
             top_bar,
-            values=[
-                "Grade 12A",
-                "Grade 12B",
-                "Grade 11A",
-                "Grade 11B"
-            ],
-            width=220,
-            height=46,
-            corner_radius=14,
-            button_color="#EF4444",
-            button_hover_color="#DC2626"
+            fg_color="transparent"
         )
 
-        class_dropdown.set("Grade 12A")
-        class_dropdown.pack(side="left")
+        title_frame.pack(side="left")
 
+        title = ctk.CTkLabel(
+            title_frame,
+            text="Analytics & Risk Prediction",
+            font=("Segoe UI", 40, "bold")
+        )
+
+        title.pack(anchor="w")
+
+        subtitle = ctk.CTkLabel(
+            title_frame,
+            text="Analyze student performance and identify intervention needs",
+            font=("Segoe UI", 17),
+            text_color="#94A3B8"
+        )
+
+        subtitle.pack(anchor="w")
+
+        # BACK BUTTON
+        if self.back_command:
+
+            back_btn = ctk.CTkButton(
+                top_bar,
+                text="← Back",
+                width=140,
+                height=46,
+                corner_radius=16,
+                fg_color="#EF4444",
+                hover_color="#DC2626",
+                font=("Segoe UI", 16, "bold"),
+                command=self.back_command
+            )
+
+            back_btn.pack(side="right")
+
+        # ==================================
+        # TOP FILTER
+        # ==================================
+        top_filter = ctk.CTkFrame(
+            self,
+            fg_color="transparent"
+        )
+
+        top_filter.pack(
+            fill="x",
+            padx=35,
+            pady=20
+        )
+
+        selected_class = (
+            self.class_data["name"]
+            if self.class_data
+            else "Grade 12A"
+        )
+
+        # ==================================
+        # OPENED FROM CLASS DETAIL
+        # ==================================
+        if self.class_data:
+
+            class_box = ctk.CTkFrame(
+                top_filter,
+                fg_color="#111827",
+                corner_radius=14,
+                width=220,
+                height=46
+            )
+
+            class_box.pack(side="left")
+
+            class_box.pack_propagate(False)
+
+            ctk.CTkLabel(
+                class_box,
+                text=selected_class,
+                font=("Segoe UI", 15, "bold")
+            ).pack(
+                pady=10
+            )
+
+        # ==================================
+        # OPENED FROM SIDEBAR
+        # ==================================
+        else:
+
+            class_dropdown = ctk.CTkComboBox(
+                top_filter,
+                values=[
+                    "Grade 12A",
+                    "Grade 12B",
+                    "Grade 11A",
+                    "Grade 11B"
+                ],
+                width=220,
+                height=46,
+                corner_radius=14,
+                button_color="#EF4444",
+                button_hover_color="#DC2626"
+            )
+
+            class_dropdown.set(selected_class)
+            class_dropdown.pack(side="left")
+
+        # RISK FILTER
         risk_filter = ctk.CTkComboBox(
-            top_bar,
+            top_filter,
             values=[
                 "All Risk",
                 "High Risk",
@@ -127,25 +200,23 @@ class AnalyticsPage(ctk.CTkFrame):
                 padx=10
             )
 
-            num = ctk.CTkLabel(
+            card.pack_propagate(False)
+
+            ctk.CTkLabel(
                 card,
                 text=value,
                 font=("Segoe UI", 34, "bold"),
                 text_color=color
-            )
-
-            num.pack(
+            ).pack(
                 pady=(28, 5)
             )
 
-            txt = ctk.CTkLabel(
+            ctk.CTkLabel(
                 card,
                 text=label,
                 font=("Segoe UI", 16),
                 text_color="#94A3B8"
-            )
-
-            txt.pack()
+            ).pack()
 
         # ==================================
         # BODY
@@ -182,21 +253,16 @@ class AnalyticsPage(ctk.CTkFrame):
             padx=(0, 15)
         )
 
-        table_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             table_frame,
             text="Student Risk Prediction",
             font=("Segoe UI", 26, "bold")
-        )
-
-        table_title.pack(
+        ).pack(
             anchor="w",
             padx=25,
             pady=(25, 20)
         )
 
-        # ==================================
-        # TABLE HEADER
-        # ==================================
         header = ctk.CTkFrame(
             table_frame,
             fg_color="#111827",
@@ -220,22 +286,17 @@ class AnalyticsPage(ctk.CTkFrame):
 
         for col, width in columns:
 
-            lbl = ctk.CTkLabel(
+            ctk.CTkLabel(
                 header,
                 text=col,
                 width=width,
                 font=("Segoe UI", 14, "bold")
-            )
-
-            lbl.pack(
+            ).pack(
                 side="left",
                 padx=4,
                 pady=18
             )
 
-        # ==================================
-        # SCROLL TABLE
-        # ==================================
         scroll_table = ctk.CTkScrollableFrame(
             table_frame,
             fg_color="transparent"
@@ -291,22 +352,20 @@ class AnalyticsPage(ctk.CTkFrame):
                 elif value == "Low":
                     color = "#10B981"
 
-                lbl = ctk.CTkLabel(
+                ctk.CTkLabel(
                     row,
                     text=str(value),
                     width=width,
                     font=("Segoe UI", 14),
                     text_color=color
-                )
-
-                lbl.pack(
+                ).pack(
                     side="left",
                     padx=4,
                     pady=18
                 )
 
         # ==================================
-        # AI INSIGHTS PANEL
+        # AI INSIGHTS
         # ==================================
         side_panel = ctk.CTkFrame(
             body,
@@ -320,13 +379,11 @@ class AnalyticsPage(ctk.CTkFrame):
             sticky="nsew"
         )
 
-        insight_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             side_panel,
             text="AI Insights",
             font=("Segoe UI", 26, "bold")
-        )
-
-        insight_title.pack(
+        ).pack(
             anchor="w",
             padx=25,
             pady=(25, 20)
@@ -342,23 +399,18 @@ class AnalyticsPage(ctk.CTkFrame):
 
         for item in insights:
 
-            lbl = ctk.CTkLabel(
+            ctk.CTkLabel(
                 side_panel,
                 text=item,
                 font=("Segoe UI", 16),
                 text_color="#CBD5E1",
                 justify="left"
-            )
-
-            lbl.pack(
+            ).pack(
                 anchor="w",
                 padx=25,
                 pady=8
             )
 
-        # ==================================
-        # INTERVENTION PANEL
-        # ==================================
         intervention = ctk.CTkFrame(
             side_panel,
             fg_color="#111827",
@@ -371,19 +423,17 @@ class AnalyticsPage(ctk.CTkFrame):
             pady=25
         )
 
-        intervention_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             intervention,
             text="Recommended Action",
             font=("Segoe UI", 20, "bold")
-        )
-
-        intervention_title.pack(
+        ).pack(
             anchor="w",
             padx=20,
             pady=(20, 10)
         )
 
-        intervention_text = ctk.CTkLabel(
+        ctk.CTkLabel(
             intervention,
             text=(
                 "Schedule intervention for students\n"
@@ -393,9 +443,7 @@ class AnalyticsPage(ctk.CTkFrame):
             justify="left",
             font=("Segoe UI", 15),
             text_color="#CBD5E1"
-        )
-
-        intervention_text.pack(
+        ).pack(
             anchor="w",
             padx=20,
             pady=(0, 20)

@@ -22,11 +22,24 @@ class AdminDashboard(DashboardShell):
 
         self.build_dashboard()
 
+    # ==================================
+    # DASHBOARD UI
+    # ==================================
     def build_dashboard(self):
 
-        # ==================================
+        # ==========================
+        # CONTENT GRID FIX
+        # ==========================
+        self.content.grid_columnconfigure(0, weight=1)
+        self.content.grid_columnconfigure(1, weight=1)
+        self.content.grid_columnconfigure(2, weight=1)
+        self.content.grid_columnconfigure(3, weight=1)
+
+        self.content.grid_rowconfigure(3, weight=1)
+
+        # ==========================
         # HEADER
-        # ==================================
+        # ==========================
         title = ctk.CTkLabel(
             self.content,
             text="Admin Dashboard",
@@ -38,7 +51,7 @@ class AdminDashboard(DashboardShell):
             column=0,
             columnspan=4,
             sticky="w",
-            pady=(20, 5)
+            pady=(10, 5)
         )
 
         subtitle = ctk.CTkLabel(
@@ -53,12 +66,12 @@ class AdminDashboard(DashboardShell):
             column=0,
             columnspan=4,
             sticky="w",
-            pady=(0, 35)
+            pady=(0, 30)
         )
 
-        # ==================================
-        # STATS
-        # ==================================
+        # ==========================
+        # STAT CARDS
+        # ==========================
         stats = [
             ("1,540", "Students"),
             ("38", "Teachers"),
@@ -72,24 +85,30 @@ class AdminDashboard(DashboardShell):
                 self.content,
                 fg_color="#0F172A",
                 corner_radius=28,
-                height=170
+                height=160
             )
 
             card.grid(
                 row=2,
                 column=i,
                 sticky="nsew",
-                padx=12
+                padx=10,
+                pady=(0, 22)
             )
+
+            card.grid_propagate(False)
 
             num = ctk.CTkLabel(
                 card,
                 text=value,
-                font=("Segoe UI", 36, "bold"),
+                font=("Segoe UI", 38, "bold"),
                 text_color="#3B82F6"
             )
 
-            num.pack(pady=(42, 8))
+            num.pack(
+                expand=True,
+                pady=(30, 0)
+            )
 
             txt = ctk.CTkLabel(
                 card,
@@ -98,11 +117,13 @@ class AdminDashboard(DashboardShell):
                 text_color="#94A3B8"
             )
 
-            txt.pack()
+            txt.pack(
+                pady=(0, 28)
+            )
 
-        # ==================================
+        # ==========================
         # QUICK ACTIONS
-        # ==================================
+        # ==========================
         quick_actions = ctk.CTkFrame(
             self.content,
             fg_color="#0F172A",
@@ -114,20 +135,20 @@ class AdminDashboard(DashboardShell):
             column=0,
             columnspan=2,
             sticky="nsew",
-            padx=12,
-            pady=25
+            padx=(10, 10),
+            pady=(0, 10)
         )
 
         quick_title = ctk.CTkLabel(
             quick_actions,
             text="Quick Actions",
-            font=("Segoe UI", 26, "bold")
+            font=("Segoe UI", 28, "bold")
         )
 
         quick_title.pack(
             anchor="w",
-            padx=25,
-            pady=(25, 20)
+            padx=28,
+            pady=(28, 22)
         )
 
         actions = [
@@ -151,13 +172,13 @@ class AdminDashboard(DashboardShell):
 
             btn.pack(
                 fill="x",
-                padx=25,
+                padx=28,
                 pady=8
             )
 
-        # ==================================
+        # ==========================
         # RECENT ACTIVITY
-        # ==================================
+        # ==========================
         activity = ctk.CTkFrame(
             self.content,
             fg_color="#0F172A",
@@ -169,20 +190,20 @@ class AdminDashboard(DashboardShell):
             column=2,
             columnspan=2,
             sticky="nsew",
-            padx=12,
-            pady=25
+            padx=(10, 10),
+            pady=(0, 10)
         )
 
         activity_title = ctk.CTkLabel(
             activity,
             text="Recent Activity",
-            font=("Segoe UI", 26, "bold")
+            font=("Segoe UI", 28, "bold")
         )
 
         activity_title.pack(
             anchor="w",
-            padx=25,
-            pady=(25, 20)
+            padx=28,
+            pady=(28, 22)
         )
 
         activities = [
@@ -203,6 +224,6 @@ class AdminDashboard(DashboardShell):
 
             label.pack(
                 anchor="w",
-                padx=25,
-                pady=8
+                padx=28,
+                pady=10
             )

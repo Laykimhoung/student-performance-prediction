@@ -1,0 +1,313 @@
+import customtkinter as ctk
+
+
+class GradeEntryPage(ctk.CTkFrame):
+
+    def __init__(
+            self,
+            parent,
+            class_data=None,
+            back_command=None
+    ):
+        super().__init__(
+            parent,
+            fg_color="#071224"
+        )
+
+        self.class_data = class_data
+        self.back_command = back_command
+
+        self.students = self.load_students()
+
+        self.build_ui()
+
+    # ==================================
+    # MOCK DATA
+    # ==================================
+    def load_students(self):
+
+        return [
+            "Dara (001)",
+            "Sokha (002)",
+            "Lina (003)",
+            "Nita (004)"
+        ]
+
+    # ==================================
+    # SAVE
+    # ==================================
+    def save_grade(self):
+
+        values = {
+            "Quiz": self.quiz.get(),
+            "Homework": self.homework.get(),
+            "Attendance": self.attendance.get(),
+            "Assignment": self.assignment.get(),
+            "Midterm": self.midterm.get(),
+            "Final": self.final_exam.get(),
+            "Participation": self.participation.get(),
+            "Project": self.project.get(),
+            "Behavior": self.behavior.get()
+        }
+
+        print("Saved:", values)
+
+    # ==================================
+    # UI
+    # ==================================
+    def build_ui(self):
+
+        # ==================================
+        # SCROLLABLE PAGE
+        # ==================================
+        page = ctk.CTkScrollableFrame(
+            self,
+            fg_color="#071224"
+        )
+
+        page.pack(
+            fill="both",
+            expand=True
+        )
+
+        # ==================================
+        # HEADER
+        # ==================================
+        top_bar = ctk.CTkFrame(
+            page,
+            fg_color="transparent"
+        )
+
+        top_bar.pack(
+            fill="x",
+            padx=35,
+            pady=(25, 10)
+        )
+
+        title_frame = ctk.CTkFrame(
+            top_bar,
+            fg_color="transparent"
+        )
+
+        title_frame.pack(side="left")
+
+        title = ctk.CTkLabel(
+            title_frame,
+            text="Grade Entry",
+            font=("Segoe UI", 40, "bold")
+        )
+
+        title.pack(anchor="w")
+
+        subtitle = ctk.CTkLabel(
+            title_frame,
+            text="Input student academic performance",
+            font=("Segoe UI", 17),
+            text_color="#94A3B8"
+        )
+
+        subtitle.pack(anchor="w")
+
+        back_btn = ctk.CTkButton(
+            top_bar,
+            text="← Back",
+            width=140,
+            height=46,
+            corner_radius=16,
+            fg_color="#EF4444",
+            hover_color="#DC2626",
+            font=("Segoe UI", 16, "bold"),
+            command=self.back_command
+        )
+
+        back_btn.pack(side="right")
+
+        # ==================================
+        # MAIN CARD
+        # ==================================
+        container = ctk.CTkFrame(
+            page,
+            fg_color="#0F172A",
+            corner_radius=30
+        )
+
+        container.pack(
+            fill="both",
+            expand=True,
+            padx=35,
+            pady=(10, 35)
+        )
+
+        # ==================================
+        # SELECT STUDENT
+        # ==================================
+        title = ctk.CTkLabel(
+            container,
+            text="Select Student",
+            font=("Segoe UI", 26, "bold")
+        )
+
+        title.pack(
+            anchor="w",
+            padx=35,
+            pady=(35, 15)
+        )
+
+        self.student_dropdown = ctk.CTkComboBox(
+            container,
+            values=self.students,
+            width=350,
+            height=48
+        )
+
+        self.student_dropdown.pack(
+            anchor="w",
+            padx=35
+        )
+
+        # ==================================
+        # FORM
+        # ==================================
+        form_frame = ctk.CTkFrame(
+            container,
+            fg_color="transparent"
+        )
+
+        form_frame.pack(
+            fill="both",
+            expand=True,
+            padx=35,
+            pady=(30, 45)
+        )
+
+        form_frame.grid_columnconfigure(0, weight=1)
+        form_frame.grid_columnconfigure(1, weight=1)
+
+        self.quiz = self.create_input(
+            form_frame,
+            "Quiz",
+            0,
+            0
+        )
+
+        self.homework = self.create_input(
+            form_frame,
+            "Homework",
+            0,
+            1
+        )
+
+        self.attendance = self.create_input(
+            form_frame,
+            "Attendance",
+            1,
+            0
+        )
+
+        self.assignment = self.create_input(
+            form_frame,
+            "Assignment",
+            1,
+            1
+        )
+
+        self.midterm = self.create_input(
+            form_frame,
+            "Midterm",
+            2,
+            0
+        )
+
+        self.final_exam = self.create_input(
+            form_frame,
+            "Final",
+            2,
+            1
+        )
+
+        self.participation = self.create_input(
+            form_frame,
+            "Participation",
+            3,
+            0
+        )
+
+        self.project = self.create_input(
+            form_frame,
+            "Project",
+            3,
+            1
+        )
+
+        self.behavior = self.create_input(
+            form_frame,
+            "Behavior",
+            4,
+            0
+        )
+
+        # ==================================
+        # SAVE BUTTON
+        # ==================================
+        save_btn = ctk.CTkButton(
+            container,
+            text="Save Grade",
+            height=56,
+            corner_radius=18,
+            fg_color="#EF4444",
+            hover_color="#DC2626",
+            font=("Segoe UI", 18, "bold"),
+            command=self.save_grade
+        )
+
+        save_btn.pack(
+            fill="x",
+            padx=35,
+            pady=(10, 35)
+        )
+
+    # ==================================
+    # INPUT HELPER
+    # ==================================
+    def create_input(
+            self,
+            parent,
+            label_text,
+            row,
+            column
+    ):
+
+        frame = ctk.CTkFrame(
+            parent,
+            fg_color="transparent"
+        )
+
+        frame.grid(
+            row=row,
+            column=column,
+            sticky="ew",
+            padx=12,
+            pady=12
+        )
+
+        label = ctk.CTkLabel(
+            frame,
+            text=label_text,
+            font=("Segoe UI", 16, "bold")
+        )
+
+        label.pack(
+            anchor="w",
+            pady=(0, 8)
+        )
+
+        entry = ctk.CTkEntry(
+            frame,
+            height=50,
+            corner_radius=14,
+            placeholder_text=f"Enter {label_text}"
+        )
+
+        entry.pack(fill="x")
+
+        return entry
