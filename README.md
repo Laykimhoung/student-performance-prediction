@@ -48,7 +48,6 @@ Current development focus includes:
 - [ ] Charts & Data Visualization
 - [ ] PDF Report Generation
 - [ ] Database Architecture
-- [ ] Packaging to `.exe`
 
 ---
 ## 🛠️ Technologies Used
@@ -72,7 +71,7 @@ This project is powered by the following technologies:
 ---
 ## 🚀 Installation & Setup
 
-Follow these steps to run **EduVision AI** locally.
+Follow these steps to run **EduVision AI** locally. But make sure you already have Python version **3.11.X**.
 
 ### Step 1 — Clone the Repository
 
@@ -83,12 +82,12 @@ cd student-performance-prediction
 
 ---
 
-### Step 2 — Create a Virtual Environment
+### Step 2 — Create a Virtual Environment​​
 
-Create a local Python virtual environment:
+Create a local Python virtual environment with Python 3.11:
 
 ```bash
-python -m venv .venv
+py -3.11 -m venv .venv
 ```
 
 
