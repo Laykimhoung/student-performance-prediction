@@ -11,6 +11,25 @@ from datetime import datetime
 from pathlib import Path
 
 
+def calculate_average(student):
+
+    scores = [
+        student["quiz"],
+        student["homework"],
+        student["assignment"],
+        student["midterm"],
+        student["final"],
+        student["participation"],
+        student["project"],
+        student["behavior"]
+    ]
+
+    return round(
+        sum(scores) / len(scores),
+        1
+    )
+
+
 def export_class_excel(class_data, students):
 
     wb = Workbook()
@@ -21,9 +40,10 @@ def export_class_excel(class_data, students):
     # STYLES
     # ==================================
     dark_blue = "1E3A8A"
-    green = "DCFCE7"
-    yellow = "FEF3C7"
-    red = "FEE2E2"
+
+    low_risk = "DCFCE7"
+    medium_risk = "FEF3C7"
+    high_risk = "FEE2E2"
 
     header_fill = PatternFill(
         fill_type="solid",
@@ -42,21 +62,46 @@ def export_class_excel(class_data, students):
         vertical="center"
     )
 
-    bold_font = Font(bold=True)
+    bold_font = Font(
+        bold=True
+    )
 
     # ==================================
-    # CLASS SUMMARY (6 x 2 TABLE)
+    # RISK COUNTS
+    # ==================================
+    high_count = sum(
+        1 for s in students
+        if s["risk"] == "High"
+    )
+
+    medium_count = sum(
+        1 for s in students
+        if s["risk"] == "Medium"
+    )
+
+    low_count = sum(
+        1 for s in students
+        if s["risk"] == "Low"
+    )
+
+    # ==================================
+    # CLASS SUMMARY
     # ==================================
     summary_rows = [
         ("Class", class_data["name"]),
         ("Students", class_data["students"]),
-        ("Average", f'{class_data["average"]}%'),
-        ("Date", datetime.now().strftime("%d/%m/%Y")),
         ("Attendance", f'{class_data["attendance"]}%'),
-        ("At Risk", class_data["risk"])
+        ("Average", f'{class_data["average"]}%'),
+        ("High Risk", high_count),
+        ("Medium Risk", medium_count),
+        ("Low Risk", low_count),
+        ("Generated", datetime.now().strftime("%d/%m/%Y"))
     ]
 
-    for row_index, (label, value) in enumerate(summary_rows, start=1):
+    for row_index, (label, value) in enumerate(
+        summary_rows,
+        start=1
+    ):
 
         label_cell = ws.cell(
             row=row_index,
@@ -94,12 +139,16 @@ def export_class_excel(class_data, students):
         "Participation",
         "Project",
         "Behavior",
+        "Average",
         "Risk"
     ]
 
-    start_row = 9
+    start_row = 11
 
-    for col, header in enumerate(headers, start=1):
+    for col, header in enumerate(
+        headers,
+        start=1
+    ):
 
         cell = ws.cell(
             row=start_row,
@@ -120,9 +169,13 @@ def export_class_excel(class_data, students):
     # ==================================
     # STUDENT DATA
     # ==================================
-    row = start_row + 1
+    current_row = start_row + 1
 
     for student in students:
+
+        average = calculate_average(
+            student
+        )
 
         data = [
             student["id"],
@@ -136,13 +189,17 @@ def export_class_excel(class_data, students):
             student["participation"],
             student["project"],
             student["behavior"],
+            average,
             student["risk"]
         ]
 
-        for col, value in enumerate(data, start=1):
+        for col, value in enumerate(
+            data,
+            start=1
+        ):
 
             cell = ws.cell(
-                row=row,
+                row=current_row,
                 column=col,
                 value=value
             )
@@ -150,28 +207,55 @@ def export_class_excel(class_data, students):
             cell.border = thin_border
             cell.alignment = center
 
-            # Risk color
+            # Average Color
             if col == 12:
 
-                if value == "Low":
+                if value >= 80:
+
                     cell.fill = PatternFill(
                         fill_type="solid",
-                        fgColor=green
+                        fgColor=low_risk
+                    )
+
+                elif value >= 65:
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=medium_risk
+                    )
+
+                else:
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=high_risk
+                    )
+
+            # Risk Color
+            elif col == 13:
+
+                if value == "Low":
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=low_risk
                     )
 
                 elif value == "Medium":
+
                     cell.fill = PatternFill(
                         fill_type="solid",
-                        fgColor=yellow
+                        fgColor=medium_risk
                     )
 
                 elif value == "High":
+
                     cell.fill = PatternFill(
                         fill_type="solid",
-                        fgColor=red
+                        fgColor=high_risk
                     )
 
-        row += 1
+        current_row += 1
 
     # ==================================
     # AUTO COLUMN WIDTH
@@ -179,6 +263,7 @@ def export_class_excel(class_data, students):
     for column in ws.columns:
 
         max_length = 0
+
         column_letter = get_column_letter(
             column[0].column
         )
@@ -186,17 +271,25 @@ def export_class_excel(class_data, students):
         for cell in column:
 
             try:
+
                 if cell.value:
+
                     max_length = max(
                         max_length,
                         len(str(cell.value))
                     )
-            except:
+
+            except Exception:
                 pass
 
         ws.column_dimensions[
             column_letter
         ].width = max_length + 4
+
+    # ==================================
+    # FREEZE HEADER
+    # ==================================
+    ws.freeze_panes = "A12"
 
     # ==================================
     # SAVE TO DOWNLOADS
@@ -212,6 +305,8 @@ def export_class_excel(class_data, students):
 
     wb.save(file_path)
 
-    print(f"Excel exported: {file_path}")
+    print(
+        f"Excel exported: {file_path}"
+    )
 
     return str(file_path)

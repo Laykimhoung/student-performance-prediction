@@ -5,13 +5,20 @@ from ui.teacher.student_detail_page import StudentDetailPage
 
 class StudentsPage(ctk.CTkFrame):
 
-    def __init__(self, parent):
+    def __init__(
+        self,
+        parent,
+        back_command=None
+    ):
         super().__init__(
             parent,
             fg_color="#071224"
         )
 
+        self.back_command = back_command
+
         self.students = self.load_students()
+
         self.build_ui()
 
     # ==================================
@@ -147,16 +154,8 @@ class StudentsPage(ctk.CTkFrame):
     # BACK
     # ==================================
     def go_back(self):
-
-        parent = self.master
-
-        for widget in parent.winfo_children():
-            widget.destroy()
-
-        StudentsPage(parent).pack(
-            fill="both",
-            expand=True
-        )
+        if self.back_command:
+            self.back_command()
 
     # ==================================
     # UI
@@ -208,6 +207,7 @@ class StudentsPage(ctk.CTkFrame):
         )
         search_entry.pack(side="left")
 
+        # CLASS DROPDOWN
         class_dropdown = ctk.CTkComboBox(
             top_bar,
             width=180,
@@ -221,7 +221,29 @@ class StudentsPage(ctk.CTkFrame):
         )
 
         class_dropdown.set("Grade 12A")
-        class_dropdown.pack(side="right")
+        class_dropdown.pack(
+            side="right"
+        )
+
+        # BACK BUTTON
+        if self.back_command:
+
+            back_btn = ctk.CTkButton(
+                top_bar,
+                text="← Back",
+                width=120,
+                height=48,
+                corner_radius=14,
+                fg_color="#EF4444",
+                hover_color="#DC2626",
+                font=("Segoe UI", 15, "bold"),
+                command=self.go_back
+            )
+
+            back_btn.pack(
+                side="right",
+                padx=(0, 10)
+            )
 
         # ======================
         # BODY

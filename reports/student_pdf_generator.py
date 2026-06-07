@@ -12,6 +12,25 @@ from pathlib import Path
 from datetime import datetime
 
 
+def calculate_average(student):
+
+    scores = [
+        student["quiz"],
+        student["homework"],
+        student["assignment"],
+        student["midterm"],
+        student["final"],
+        student["participation"],
+        student["project"],
+        student["behavior"]
+    ]
+
+    return round(
+        sum(scores) / len(scores),
+        1
+    )
+
+
 def export_student_pdf(student):
 
     # ==================================
@@ -46,6 +65,8 @@ def export_student_pdf(student):
 
     story = []
 
+    average = calculate_average(student)
+
     # ==================================
     # HEADER
     # ==================================
@@ -71,10 +92,12 @@ def export_student_pdf(student):
         )
     )
 
-    story.append(Spacer(1, 20))
+    story.append(
+        Spacer(1, 20)
+    )
 
     # ==================================
-    # STUDENT INFO
+    # STUDENT INFORMATION
     # ==================================
     story.append(
         Paragraph(
@@ -87,14 +110,15 @@ def export_student_pdf(student):
         ["Student", student["name"]],
         ["ID", student["id"]],
         ["Class", student["class"]],
-        ["Semester", "Semester 1"],
+        ["Semester", student.get("semester", 1)],
         ["Attendance", f'{student["attendance"]}%'],
-        ["Risk", student["risk"]]
+        ["Average Score", f"{average}%"],
+        ["Risk Level", student["risk"]]
     ]
 
     info_table = Table(
         info_data,
-        colWidths=[150, 250]
+        colWidths=[180, 250]
     )
 
     info_table.setStyle(TableStyle([
@@ -122,20 +146,22 @@ def export_student_pdf(student):
 
     story.append(info_table)
 
-    story.append(Spacer(1, 25))
+    story.append(
+        Spacer(1, 25)
+    )
 
     # ==================================
-    # PERFORMANCE TABLE
+    # PERFORMANCE SUMMARY
     # ==================================
     story.append(
         Paragraph(
-            "Academic Performance",
+            "Performance Summary",
             heading_style
         )
     )
 
-    performance_data = [
-        ["Category", "Score"],
+    summary_data = [
+        ["Attendance", f'{student["attendance"]}%'],
         ["Quiz", student["quiz"]],
         ["Homework", student["homework"]],
         ["Assignment", student["assignment"]],
@@ -143,22 +169,26 @@ def export_student_pdf(student):
         ["Final", student["final"]],
         ["Participation", student["participation"]],
         ["Project", student["project"]],
-        ["Behavior", student["behavior"]]
+        ["Behavior", student["behavior"]],
+        ["Average", average]
     ]
 
-    performance_table = Table(
-        performance_data,
+    summary_table = Table(
+        summary_data,
         colWidths=[220, 180]
     )
 
-    performance_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0),
+    summary_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (0, -1),
          colors.HexColor("#1E3A8A")),
 
-        ("TEXTCOLOR", (0, 0), (-1, 0),
+        ("TEXTCOLOR", (0, 0), (0, -1),
          colors.white),
 
-        ("FONTNAME", (0, 0), (-1, 0),
+        ("BACKGROUND", (1, 0), (1, -1),
+         colors.HexColor("#F8FAFC")),
+
+        ("FONTNAME", (0, 0), (-1, -1),
          "Helvetica-Bold"),
 
         ("GRID", (0, 0), (-1, -1),
@@ -171,12 +201,14 @@ def export_student_pdf(student):
          "MIDDLE")
     ]))
 
-    story.append(performance_table)
+    story.append(summary_table)
 
-    story.append(Spacer(1, 25))
+    story.append(
+        Spacer(1, 25)
+    )
 
     # ==================================
-    # AI RISK ANALYSIS
+    # AI RISK PREDICTION
     # ==================================
     story.append(
         Paragraph(
@@ -193,9 +225,12 @@ def export_student_pdf(student):
     elif student["risk"] == "High":
         risk_color = "#FEE2E2"
 
-    risk_table = Table([
-        ["Risk Level", student["risk"]]
-    ], colWidths=[200, 200])
+    risk_table = Table(
+        [
+            ["Risk Level", student["risk"]]
+        ],
+        colWidths=[200, 200]
+    )
 
     risk_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, 0),
@@ -219,48 +254,117 @@ def export_student_pdf(student):
 
     story.append(risk_table)
 
-    story.append(Spacer(1, 25))
+    story.append(
+        Spacer(1, 25)
+    )
+
+    # ==================================
+    # RISK FACTORS
+    # ==================================
+    story.append(
+        Paragraph(
+            "Risk Factors",
+            heading_style
+        )
+    )
+
+    risk_factor_text = ""
+
+    if student.get("risk_factors"):
+
+        for factor in student["risk_factors"]:
+
+            risk_factor_text += (
+                f"• {factor}<br/>"
+            )
+
+    else:
+
+        risk_factor_text = (
+            "No significant risk factors detected."
+        )
+
+    story.append(
+        Paragraph(
+            risk_factor_text,
+            body_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 20)
+    )
 
     # ==================================
     # RECOMMENDATION
     # ==================================
     story.append(
         Paragraph(
-            "Recommendation",
+            "Personalized Recommendation",
             heading_style
         )
     )
 
-    if student["risk"] == "High":
-
-        recommendation = (
-            "Immediate intervention recommended. "
-            "Monitor attendance and provide "
-            "additional academic support."
-        )
-
-    elif student["risk"] == "Medium":
-
-        recommendation = (
-            "Continue monitoring progress and "
-            "encourage participation improvement."
-        )
-
-    else:
-
-        recommendation = (
-            "Maintain current academic performance "
-            "and attendance consistency."
-        )
+    recommendation = student.get(
+        "recommendation",
+        "Maintain current academic performance."
+    )
 
     story.append(
         Paragraph(
-            recommendation,
+            recommendation.replace(
+                "\n",
+                "<br/>"
+            ),
             body_style
         )
     )
 
-    story.append(Spacer(1, 20))
+    story.append(
+        Spacer(1, 20)
+    )
+
+    # ==================================
+    # PERFORMANCE STATUS
+    # ==================================
+    story.append(
+        Paragraph(
+            "Performance Status",
+            heading_style
+        )
+    )
+
+    if average >= 80:
+
+        performance_text = (
+            "The student demonstrates strong academic "
+            "performance and consistent classroom engagement."
+        )
+
+    elif average >= 65:
+
+        performance_text = (
+            "The student shows acceptable performance "
+            "but should continue improving academic consistency."
+        )
+
+    else:
+
+        performance_text = (
+            "The student requires additional academic "
+            "support and closer monitoring."
+        )
+
+    story.append(
+        Paragraph(
+            performance_text,
+            body_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 25)
+    )
 
     story.append(
         Paragraph(

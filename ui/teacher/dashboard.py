@@ -12,10 +12,8 @@ class TeacherDashboard(DashboardShell):
             accent_color="#EF4444",
             menu_items=[
                 "Dashboard",
-                "Classroom",
+                "Classrooms",
                 "Students",
-                "Attendance",
-                "Assessment",
                 "Analytics"
             ]
         )
@@ -37,37 +35,32 @@ class TeacherDashboard(DashboardShell):
         if page_name == "Dashboard":
             self.build_dashboard()
 
-        elif page_name == "Classroom":
+        elif page_name == "Classrooms":
             from ui.teacher.classroom_page import ClassroomPage
-            ClassroomPage(self.content).pack(
+
+            ClassroomPage(
+                self.content
+            ).pack(
                 fill="both",
                 expand=True
             )
 
         elif page_name == "Students":
             from ui.teacher.students_page import StudentsPage
-            StudentsPage(self.content).pack(
-                fill="both",
-                expand=True
-            )
 
-        elif page_name == "Attendance":
-            from ui.teacher.attendance_page import AttendancePage
-            AttendancePage(self.content).pack(
-                fill="both",
-                expand=True
-            )
-
-        elif page_name == "Assessment":
-            from ui.teacher.assessment_page import AssessmentPage
-            AssessmentPage(self.content).pack(
+            StudentsPage(
+                self.content
+            ).pack(
                 fill="both",
                 expand=True
             )
 
         elif page_name == "Analytics":
             from ui.teacher.analytics_page import AnalyticsPage
-            AnalyticsPage(self.content).pack(
+
+            AnalyticsPage(
+                self.content
+            ).pack(
                 fill="both",
                 expand=True
             )
@@ -93,7 +86,7 @@ class TeacherDashboard(DashboardShell):
 
         subtitle = ctk.CTkLabel(
             self.content,
-            text="Monitor classes, attendance, assessment and student risk",
+            text="Monitor classes, student performance and risk prediction",
             font=("Segoe UI", 17),
             text_color="#94A3B8"
         )
@@ -109,6 +102,7 @@ class TeacherDashboard(DashboardShell):
             self.content,
             fg_color="transparent"
         )
+
         stats_frame.pack(
             fill="x",
             padx=30,
@@ -116,10 +110,10 @@ class TeacherDashboard(DashboardShell):
         )
 
         stats = [
-            ("240", "Students", "#EF4444"),
-            ("92%", "Attendance", "#10B981"),
-            ("12", "High Risk", "#F59E0B"),
-            ("18", "Assignments", "#3B82F6")
+            ("8", "Classes", "#3B82F6"),
+            ("240", "Students", "#10B981"),
+            ("92%", "Attendance", "#F59E0B"),
+            ("12", "High Risk", "#EF4444")
         ]
 
         for value, label, color in stats:
@@ -127,8 +121,8 @@ class TeacherDashboard(DashboardShell):
             card = ctk.CTkFrame(
                 stats_frame,
                 fg_color="#0F172A",
-                height=150,
-                corner_radius=28
+                corner_radius=28,
+                height=150
             )
 
             card.pack(
@@ -138,23 +132,21 @@ class TeacherDashboard(DashboardShell):
                 padx=10
             )
 
-            num = ctk.CTkLabel(
+            ctk.CTkLabel(
                 card,
                 text=value,
                 font=("Segoe UI", 34, "bold"),
                 text_color=color
-            )
-            num.pack(
+            ).pack(
                 pady=(30, 5)
             )
 
-            txt = ctk.CTkLabel(
+            ctk.CTkLabel(
                 card,
                 text=label,
                 font=("Segoe UI", 17),
                 text_color="#94A3B8"
-            )
-            txt.pack()
+            ).pack()
 
         # ===============================
         # MAIN AREA
@@ -163,6 +155,7 @@ class TeacherDashboard(DashboardShell):
             self.content,
             fg_color="transparent"
         )
+
         body.pack(
             fill="both",
             expand=True,
@@ -170,106 +163,132 @@ class TeacherDashboard(DashboardShell):
             pady=(0, 25)
         )
 
-        body.grid_columnconfigure(0, weight=2)
-        body.grid_columnconfigure(1, weight=1)
-        body.grid_rowconfigure(0, weight=1)
+        body.grid_columnconfigure(
+            0,
+            weight=2
+        )
+
+        body.grid_columnconfigure(
+            1,
+            weight=1
+        )
+
+        body.grid_rowconfigure(
+            0,
+            weight=1
+        )
 
         # ===============================
-        # RECENT ACTIVITY
+        # RECENT ALERTS
         # ===============================
-        activity_frame = ctk.CTkFrame(
+        alerts_frame = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
             corner_radius=28
         )
 
-        activity_frame.grid(
+        alerts_frame.grid(
             row=0,
             column=0,
             sticky="nsew",
             padx=(0, 15)
         )
 
-        activity_title = ctk.CTkLabel(
-            activity_frame,
-            text="Recent Activity",
+        ctk.CTkLabel(
+            alerts_frame,
+            text="Recent Alerts",
             font=("Segoe UI", 26, "bold")
-        )
-        activity_title.pack(
+        ).pack(
             anchor="w",
             padx=25,
             pady=(25, 20)
         )
 
-        activities = [
-            "✓ Attendance recorded for Grade 12A",
-            "✓ Quiz scores updated",
-            "✓ Homework submitted by 34 students",
-            "✓ Midterm grades published",
-            "⚠ 4 students marked high risk"
+        alerts = [
+            "⚠ Sokha attendance dropped below 60%",
+            "⚠ Kimlong marked High Risk",
+            "✓ Grade 12A attendance improved",
+            "✓ Midterm scores uploaded",
+            "✓ Assignment report exported"
         ]
 
-        for item in activities:
+        for item in alerts:
 
-            label = ctk.CTkLabel(
-                activity_frame,
+            ctk.CTkLabel(
+                alerts_frame,
                 text=item,
                 font=("Segoe UI", 17),
                 text_color="#CBD5E1"
-            )
-            label.pack(
+            ).pack(
                 anchor="w",
                 padx=25,
                 pady=8
             )
 
         # ===============================
-        # QUICK ACTIONS
+        # ACADEMIC INSIGHTS
         # ===============================
-        action_frame = ctk.CTkFrame(
+        insight_frame = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
             corner_radius=28
         )
 
-        action_frame.grid(
+        insight_frame.grid(
             row=0,
             column=1,
             sticky="nsew"
         )
 
-        quick_title = ctk.CTkLabel(
-            action_frame,
-            text="Quick Actions",
+        ctk.CTkLabel(
+            insight_frame,
+            text="Academic Insights",
             font=("Segoe UI", 26, "bold")
-        )
-        quick_title.pack(
+        ).pack(
             anchor="w",
             padx=25,
             pady=(25, 20)
         )
 
-        actions = [
-            "Take Attendance",
-            "Open Students",
-            "Assessment",
-            "Analytics"
+        insights = [
+            ("Top Class", "Grade 12A", "#10B981"),
+            ("Lowest Class", "Grade 11B", "#EF4444"),
+            ("High Risk Students", "12 Students", "#F59E0B"),
+            ("Attendance Trend", "Improving ↑", "#3B82F6")
         ]
 
-        for action in actions:
+        for title, value, color in insights:
 
-            btn = ctk.CTkButton(
-                action_frame,
-                text=action,
-                height=50,
-                corner_radius=18,
-                fg_color="#EF4444",
-                hover_color="#DC2626",
-                font=("Segoe UI", 16, "bold")
+            card = ctk.CTkFrame(
+                insight_frame,
+                fg_color="#111827",
+                corner_radius=20
             )
 
-            btn.pack(
+            card.pack(
                 fill="x",
-                padx=25,
-                pady=8
+                padx=20,
+                pady=10
+            )
+
+            ctk.CTkLabel(
+                card,
+                text=title,
+                font=("Segoe UI", 14),
+                text_color="#94A3B8"
+            ).pack(
+                anchor="w",
+                padx=18,
+                pady=(15, 2)
+            )
+
+            ctk.CTkLabel(
+                card,
+                text=value,
+                font=("Segoe UI", 22, "bold"),
+                text_color=color
+            ).pack(
+                anchor="w",
+                padx=18,
+                pady=(0, 15)
             )

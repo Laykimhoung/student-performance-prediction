@@ -3,13 +3,33 @@ from reportlab.platypus import (
     Spacer,
     Table,
     TableStyle,
-    Paragraph
+    Paragraph,
+    PageBreak
 )
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4, landscape
 from pathlib import Path
 from datetime import datetime
+
+
+def calculate_average(student):
+
+    scores = [
+        student["quiz"],
+        student["homework"],
+        student["assignment"],
+        student["midterm"],
+        student["final"],
+        student["participation"],
+        student["project"],
+        student["behavior"]
+    ]
+
+    return round(
+        sum(scores) / len(scores),
+        1
+    )
 
 
 def export_class_pdf(class_data, students):
@@ -47,6 +67,24 @@ def export_class_pdf(class_data, students):
     story = []
 
     # ==================================
+    # RISK COUNTS
+    # ==================================
+    high_risk = [
+        s for s in students
+        if s["risk"] == "High"
+    ]
+
+    medium_risk = [
+        s for s in students
+        if s["risk"] == "Medium"
+    ]
+
+    low_risk = [
+        s for s in students
+        if s["risk"] == "Low"
+    ]
+
+    # ==================================
     # HEADER
     # ==================================
     story.append(
@@ -65,12 +103,15 @@ def export_class_pdf(class_data, students):
 
     story.append(
         Paragraph(
-            f"Generated on: {datetime.now().strftime('%d/%m/%Y')}",
+            f"Generated on: "
+            f"{datetime.now().strftime('%d/%m/%Y')}",
             body_style
         )
     )
 
-    story.append(Spacer(1, 20))
+    story.append(
+        Spacer(1, 20)
+    )
 
     # ==================================
     # CLASS INFORMATION
@@ -82,20 +123,20 @@ def export_class_pdf(class_data, students):
         )
     )
 
-    summary_data = [
+    info_data = [
         ["Class", class_data["name"]],
         ["Students", class_data["students"]],
         ["Attendance", f'{class_data["attendance"]}%'],
         ["Average", f'{class_data["average"]}%'],
-        ["At Risk", class_data["risk"]]
+        ["Generated", datetime.now().strftime("%d/%m/%Y")]
     ]
 
-    summary_table = Table(
-        summary_data,
+    info_table = Table(
+        info_data,
         colWidths=[180, 300]
     )
 
-    summary_table.setStyle(TableStyle([
+    info_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, -1),
          colors.HexColor("#1E3A8A")),
 
@@ -118,16 +159,75 @@ def export_class_pdf(class_data, students):
          "MIDDLE")
     ]))
 
-    story.append(summary_table)
+    story.append(info_table)
 
-    story.append(Spacer(1, 25))
+    story.append(
+        Spacer(1, 20)
+    )
 
     # ==================================
-    # STUDENT LIST
+    # CLASS STATISTICS
     # ==================================
     story.append(
         Paragraph(
-            f"{class_data['name']} Student List",
+            "Class Statistics",
+            heading_style
+        )
+    )
+
+    stats_data = [
+        [
+            "Students",
+            "Attendance",
+            "Average",
+            "High Risk",
+            "Medium Risk",
+            "Low Risk"
+        ],
+        [
+            class_data["students"],
+            f'{class_data["attendance"]}%',
+            f'{class_data["average"]}%',
+            len(high_risk),
+            len(medium_risk),
+            len(low_risk)
+        ]
+    ]
+
+    stats_table = Table(
+        stats_data,
+        colWidths=[90] * 6
+    )
+
+    stats_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0),
+         colors.HexColor("#1E3A8A")),
+
+        ("TEXTCOLOR", (0, 0), (-1, 0),
+         colors.white),
+
+        ("FONTNAME", (0, 0), (-1, 0),
+         "Helvetica-Bold"),
+
+        ("GRID", (0, 0), (-1, -1),
+         1, colors.black),
+
+        ("ALIGN", (0, 0), (-1, -1),
+         "CENTER")
+    ]))
+
+    story.append(stats_table)
+
+    story.append(
+        Spacer(1, 25)
+    )
+
+    # ==================================
+    # STUDENT PERFORMANCE TABLE
+    # ==================================
+    story.append(
+        Paragraph(
+            "Student Performance",
             heading_style
         )
     )
@@ -135,19 +235,24 @@ def export_class_pdf(class_data, students):
     table_data = [[
         "ID",
         "Student",
-        "Attendance",
+        "Attend",
         "Quiz",
-        "Homework",
-        "Assignment",
-        "Midterm",
+        "HW",
+        "Assign",
+        "Mid",
         "Final",
-        "Participation",
+        "Part",
         "Project",
         "Behavior",
+        "Average",
         "Risk"
     ]]
 
     for student in students:
+
+        average = calculate_average(
+            student
+        )
 
         table_data.append([
             student["id"],
@@ -161,24 +266,26 @@ def export_class_pdf(class_data, students):
             student["participation"],
             student["project"],
             student["behavior"],
+            average,
             student["risk"]
         ])
 
     student_table = Table(
         table_data,
         colWidths=[
-            40,   # ID
-            80,   # Student
-            60,   # Attendance
-            45,   # Quiz
-            60,   # Homework
-            65,   # Assignment
-            55,   # Midterm
-            45,   # Final
-            70,   # Participation
-            50,   # Project
-            55,   # Behavior
-            45    # Risk
+            35,
+            70,
+            45,
+            40,
+            40,
+            50,
+            40,
+            40,
+            45,
+            45,
+            50,
+            50,
+            45
         ]
     )
 
@@ -192,7 +299,8 @@ def export_class_pdf(class_data, students):
         ("FONTNAME", (0, 0), (-1, 0),
          "Helvetica-Bold"),
 
-        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("FONTSIZE", (0, 0), (-1, -1),
+         8),
 
         ("GRID", (0, 0), (-1, -1),
          1, colors.black),
@@ -204,24 +312,28 @@ def export_class_pdf(class_data, students):
          "MIDDLE")
     ]
 
-    # ==================================
-    # RISK COLORS
-    # ==================================
     for row_index, student in enumerate(
         students,
         start=1
     ):
 
-        risk = student["risk"]
+        if student["risk"] == "Low":
 
-        if risk == "Low":
-            risk_color = colors.HexColor("#DCFCE7")
+            risk_color = colors.HexColor(
+                "#DCFCE7"
+            )
 
-        elif risk == "Medium":
-            risk_color = colors.HexColor("#FEF3C7")
+        elif student["risk"] == "Medium":
+
+            risk_color = colors.HexColor(
+                "#FEF3C7"
+            )
 
         else:
-            risk_color = colors.HexColor("#FEE2E2")
+
+            risk_color = colors.HexColor(
+                "#FEE2E2"
+            )
 
         style.append((
             "BACKGROUND",
@@ -236,7 +348,62 @@ def export_class_pdf(class_data, students):
 
     story.append(student_table)
 
-    story.append(Spacer(1, 25))
+    story.append(
+        Spacer(1, 25)
+    )
+
+    # ==================================
+    # RISK SUMMARY
+    # ==================================
+    story.append(
+        Paragraph(
+            "Risk Summary",
+            heading_style
+        )
+    )
+
+    risk_text = "<br/>"
+
+    risk_text += "<b>High Risk Students</b><br/>"
+
+    if high_risk:
+
+        for student in high_risk:
+            risk_text += f"• {student['name']}<br/>"
+
+    else:
+        risk_text += "None<br/>"
+
+    risk_text += "<br/><b>Medium Risk Students</b><br/>"
+
+    if medium_risk:
+
+        for student in medium_risk:
+            risk_text += f"• {student['name']}<br/>"
+
+    else:
+        risk_text += "None<br/>"
+
+    risk_text += "<br/><b>Low Risk Students</b><br/>"
+
+    if low_risk:
+
+        for student in low_risk:
+            risk_text += f"• {student['name']}<br/>"
+
+    else:
+        risk_text += "None<br/>"
+
+    story.append(
+        Paragraph(
+            risk_text,
+            body_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 20)
+    )
 
     # ==================================
     # AI RECOMMENDATION
@@ -248,16 +415,32 @@ def export_class_pdf(class_data, students):
         )
     )
 
+    recommendations = [
+        "Monitor attendance below 65%.",
+        "Provide tutoring support for weak students.",
+        "Schedule intervention for High Risk students.",
+        "Review quiz performance trends monthly.",
+        "Continue mentoring Low Risk students."
+    ]
+
+    recommendation_text = ""
+
+    for item in recommendations:
+
+        recommendation_text += (
+            f"• {item}<br/>"
+        )
+
     story.append(
         Paragraph(
-            "Students with weak attendance and unstable "
-            "academic performance should receive additional "
-            "intervention, monitoring, and tutoring.",
+            recommendation_text,
             body_style
         )
     )
 
-    story.append(Spacer(1, 20))
+    story.append(
+        Spacer(1, 20)
+    )
 
     story.append(
         Paragraph(

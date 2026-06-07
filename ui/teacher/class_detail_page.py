@@ -1,6 +1,6 @@
 from ui.teacher.student_detail_page import StudentDetailPage
+from ui.teacher.students_page import StudentsPage
 from ui.teacher.grade_entry_page import GradeEntryPage
-from ui.teacher.attendance_page import AttendancePage
 from ui.teacher.analytics_page import AnalyticsPage
 from reports.pdf_generator import export_class_pdf
 from reports.excel_generator import export_class_excel
@@ -111,7 +111,20 @@ class ClassDetailPage(ctk.CTkFrame):
                     "Provide light academic support."
             }
         ]
+    def calculate_average(self, student):
 
+        scores = [
+            student["quiz"],
+            student["homework"],
+            student["assignment"],
+            student["midterm"],
+            student["final"],
+            student["participation"],
+            student["project"],
+            student["behavior"]
+        ]
+
+        return round(sum(scores) / len(scores), 1)
     # ==================================
     # OPEN STUDENT DETAIL
     # ==================================
@@ -149,24 +162,6 @@ class ClassDetailPage(ctk.CTkFrame):
         )
 
     # ==================================
-    # OPEN ATTENDANCE
-    # ==================================
-    def open_attendance(self):
-
-        parent = self.master
-
-        self.destroy()
-
-        AttendancePage(
-            parent,
-            class_data=self.class_data,
-            back_command=self.go_back
-        ).pack(
-            fill="both",
-            expand=True
-        )
-
-    # ==================================
     # OPEN ANALYTICS
     # ==================================
     def open_analytics(self):
@@ -178,6 +173,24 @@ class ClassDetailPage(ctk.CTkFrame):
         AnalyticsPage(
             parent,
             class_data=self.class_data,
+            back_command=self.go_back
+        ).pack(
+            fill="both",
+            expand=True
+        )
+
+
+    # ==================================
+    # OPEN STUDENTS
+    # ==================================
+    def open_students(self):
+
+        parent = self.master
+
+        self.destroy()
+
+        StudentsPage(
+            parent,
             back_command=self.go_back
         ).pack(
             fill="both",
@@ -275,7 +288,7 @@ class ClassDetailPage(ctk.CTkFrame):
             fg_color="#EF4444",
             hover_color="#DC2626",
             font=("Segoe UI", 16, "bold"),
-            command=self.back_command
+            command=self.back_command if self.back_command else lambda: None
         )
 
         back_btn.pack(side="right")
@@ -344,11 +357,11 @@ class ClassDetailPage(ctk.CTkFrame):
             pady=(0, 25)
         )
 
-        body.grid_columnconfigure(0, weight=2)
+        body.grid_columnconfigure(0, weight=4)
         body.grid_columnconfigure(1, weight=1)
         body.grid_rowconfigure(0, weight=1)
 
-        # STUDENTS
+                # STUDENT PERFORMANCE TABLE
         table_frame = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
@@ -364,61 +377,110 @@ class ClassDetailPage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             table_frame,
-            text="Students",
+            text="Student Performance",
             font=("Segoe UI", 28, "bold")
         ).pack(
             anchor="w",
-            padx=28,
-            pady=(28, 20)
+            padx=25,
+            pady=(25, 20)
         )
 
-        scroll = ctk.CTkScrollableFrame(
+        # TABLE HEADER
+        header = ctk.CTkFrame(
+            table_frame,
+            fg_color="#111827",
+            corner_radius=18
+        )
+
+        header.pack(
+            fill="x",
+            padx=20,
+            pady=(0, 10)
+        )
+
+        columns = [
+            ("Student", 120),
+            ("Attend", 70),
+            ("Quiz", 60),
+            ("HW", 60),
+            ("Assign", 70),
+            ("Mid", 60),
+            ("Final", 60),
+            ("Part", 60),
+            ("Project", 70),
+            ("Behavior", 80),
+            ("Avg", 60),
+            ("Risk", 80),
+            ("Action", 90)
+        ]
+
+        for col, width in columns:
+
+            ctk.CTkLabel(
+                header,
+                text=col,
+                width=width,
+                font=("Segoe UI", 13, "bold")
+            ).pack(
+                side="left",
+                padx=2,
+                pady=16
+            )
+
+        scroll_table = ctk.CTkScrollableFrame(
             table_frame,
             fg_color="transparent"
         )
 
-        scroll.pack(
+        scroll_table.pack(
             fill="both",
             expand=True,
-            padx=20,
+            padx=15,
             pady=(0, 20)
         )
 
         for student in self.students:
 
+            average = self.calculate_average(student)
+
             row = ctk.CTkFrame(
-                scroll,
+                scroll_table,
                 fg_color="#111827",
-                corner_radius=18,
-                height=80
+                corner_radius=18
             )
 
             row.pack(
                 fill="x",
-                pady=8
+                pady=8,
+                padx=5
             )
 
-            row.pack_propagate(False)
+            values = [
+                (student["name"], 120),
+                (f'{student["attendance"]}%', 70),
+                (student["quiz"], 60),
+                (student["homework"], 60),
+                (student["assignment"], 70),
+                (student["midterm"], 60),
+                (student["final"], 60),
+                (student["participation"], 60),
+                (student["project"], 70),
+                (student["behavior"], 80),
+                (average, 60)
+            ]
 
-            info = ctk.CTkFrame(
-                row,
-                fg_color="transparent"
-            )
+            for value, width in values:
 
-            info.pack(side="left", padx=20)
-
-            ctk.CTkLabel(
-                info,
-                text=f'{student["name"]} ({student["id"]})',
-                font=("Segoe UI", 17, "bold")
-            ).pack(anchor="w")
-
-            ctk.CTkLabel(
-                info,
-                text=f'Average: {student["final"]}',
-                font=("Segoe UI", 14),
-                text_color="#94A3B8"
-            ).pack(anchor="w")
+                ctk.CTkLabel(
+                    row,
+                    text=str(value),
+                    width=width,
+                    font=("Segoe UI", 12)
+                ).pack(
+                    side="left",
+                    padx=2,
+                    pady=16
+                )
 
             risk_color = (
                 "#EF4444"
@@ -431,26 +493,29 @@ class ClassDetailPage(ctk.CTkFrame):
             ctk.CTkLabel(
                 row,
                 text=student["risk"],
-                font=("Segoe UI", 16, "bold"),
+                width=80,
+                font=("Segoe UI", 12, "bold"),
                 text_color=risk_color
             ).pack(
                 side="left",
-                padx=30
+                padx=2,
+                pady=16
             )
 
             ctk.CTkButton(
                 row,
                 text="View",
-                width=100,
-                height=40,
-                corner_radius=14,
+                width=80,
+                height=34,
+                corner_radius=12,
                 fg_color="#EF4444",
                 hover_color="#DC2626",
                 command=lambda s=student:
                 self.open_student_detail(s)
             ).pack(
-                side="right",
-                padx=20
+                side="left",
+                padx=5,
+                pady=8
             )
 
         # QUICK ACTIONS
@@ -477,16 +542,16 @@ class ClassDetailPage(ctk.CTkFrame):
         )
 
         actions = [
-            ("Take Attendance", self.open_attendance),
-            ("Grade Entry", self.open_grade_entry),
-            ("Risk Analytics", self.open_analytics),
+            ("Students", self.open_students),
+            ("Assessment", self.open_grade_entry),
+            ("Analytics", self.open_analytics),
             ("Export Excel", self.export_excel),
             ("Export PDF", self.export_pdf)
         ]
 
         for text, command in actions:
 
-            ctk.CTkButton(
+            btn = ctk.CTkButton(
                 actions_frame,
                 text=text,
                 height=52,
@@ -495,7 +560,9 @@ class ClassDetailPage(ctk.CTkFrame):
                 hover_color="#DC2626",
                 font=("Segoe UI", 16, "bold"),
                 command=command
-            ).pack(
+            )
+
+            btn.pack(
                 fill="x",
                 padx=25,
                 pady=8

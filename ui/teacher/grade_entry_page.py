@@ -34,6 +34,53 @@ class GradeEntryPage(ctk.CTkFrame):
         ]
 
     # ==================================
+    # CALCULATE RESULT
+    # ==================================
+    def calculate_result(self):
+
+        try:
+
+            scores = [
+                float(self.quiz.get() or 0),
+                float(self.homework.get() or 0),
+                float(self.assignment.get() or 0),
+                float(self.midterm.get() or 0),
+                float(self.final_exam.get() or 0),
+                float(self.participation.get() or 0),
+                float(self.project.get() or 0),
+                float(self.behavior.get() or 0)
+            ]
+
+            average = round(
+                sum(scores) / len(scores),
+                1
+            )
+
+            if average >= 80:
+                risk = "Low"
+                color = "#10B981"
+
+            elif average >= 65:
+                risk = "Medium"
+                color = "#F59E0B"
+
+            else:
+                risk = "High"
+                color = "#EF4444"
+
+            self.average_label.configure(
+                text=f"Average: {average}"
+            )
+
+            self.risk_label.configure(
+                text=f"Risk: {risk}",
+                text_color=color
+            )
+
+        except ValueError:
+            pass
+
+    # ==================================
     # SAVE
     # ==================================
     def save_grade(self):
@@ -50,6 +97,8 @@ class GradeEntryPage(ctk.CTkFrame):
             "Behavior": self.behavior.get()
         }
 
+        self.calculate_result()
+
         print("Saved:", values)
 
     # ==================================
@@ -57,9 +106,6 @@ class GradeEntryPage(ctk.CTkFrame):
     # ==================================
     def build_ui(self):
 
-        # ==================================
-        # SCROLLABLE PAGE
-        # ==================================
         page = ctk.CTkScrollableFrame(
             self,
             fg_color="#071224"
@@ -70,9 +116,7 @@ class GradeEntryPage(ctk.CTkFrame):
             expand=True
         )
 
-        # ==================================
         # HEADER
-        # ==================================
         top_bar = ctk.CTkFrame(
             page,
             fg_color="transparent"
@@ -93,7 +137,7 @@ class GradeEntryPage(ctk.CTkFrame):
 
         title = ctk.CTkLabel(
             title_frame,
-            text="Grade Entry",
+            text="Assessment",
             font=("Segoe UI", 40, "bold")
         )
 
@@ -101,7 +145,7 @@ class GradeEntryPage(ctk.CTkFrame):
 
         subtitle = ctk.CTkLabel(
             title_frame,
-            text="Input student academic performance",
+            text="Manage student assessment and performance",
             font=("Segoe UI", 17),
             text_color="#94A3B8"
         )
@@ -122,9 +166,7 @@ class GradeEntryPage(ctk.CTkFrame):
 
         back_btn.pack(side="right")
 
-        # ==================================
         # MAIN CARD
-        # ==================================
         container = ctk.CTkFrame(
             page,
             fg_color="#0F172A",
@@ -138,9 +180,7 @@ class GradeEntryPage(ctk.CTkFrame):
             pady=(10, 35)
         )
 
-        # ==================================
-        # SELECT STUDENT
-        # ==================================
+        # STUDENT
         title = ctk.CTkLabel(
             container,
             text="Select Student",
@@ -165,9 +205,7 @@ class GradeEntryPage(ctk.CTkFrame):
             padx=35
         )
 
-        # ==================================
         # FORM
-        # ==================================
         form_frame = ctk.CTkFrame(
             container,
             fg_color="transparent"
@@ -177,7 +215,7 @@ class GradeEntryPage(ctk.CTkFrame):
             fill="both",
             expand=True,
             padx=35,
-            pady=(30, 45)
+            pady=(30, 30)
         )
 
         form_frame.grid_columnconfigure(0, weight=1)
@@ -246,12 +284,47 @@ class GradeEntryPage(ctk.CTkFrame):
             0
         )
 
-        # ==================================
+        # RESULT PREVIEW
+        preview_frame = ctk.CTkFrame(
+            container,
+            fg_color="#111827",
+            corner_radius=18
+        )
+
+        preview_frame.pack(
+            fill="x",
+            padx=35,
+            pady=(0, 20)
+        )
+
+        self.average_label = ctk.CTkLabel(
+            preview_frame,
+            text="Average: --",
+            font=("Segoe UI", 18, "bold")
+        )
+
+        self.average_label.pack(
+            anchor="w",
+            padx=20,
+            pady=(15, 5)
+        )
+
+        self.risk_label = ctk.CTkLabel(
+            preview_frame,
+            text="Risk: --",
+            font=("Segoe UI", 18, "bold")
+        )
+
+        self.risk_label.pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 15)
+        )
+
         # SAVE BUTTON
-        # ==================================
         save_btn = ctk.CTkButton(
             container,
-            text="Save Grade",
+            text="Save Assessment",
             height=56,
             corner_radius=18,
             fg_color="#EF4444",
