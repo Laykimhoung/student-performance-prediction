@@ -7,7 +7,7 @@ from reportlab.platypus import (
 )
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib import pagesizes
+from reportlab.lib.pagesizes import A4, landscape
 from pathlib import Path
 from datetime import datetime
 
@@ -31,11 +31,11 @@ def export_class_pdf(class_data, students):
     # ==================================
     doc = SimpleDocTemplate(
         str(file_path),
-        pagesize=pagesizes.A4,
-        topMargin=35,
-        bottomMargin=35,
-        leftMargin=35,
-        rightMargin=35
+        pagesize=landscape(A4),
+        topMargin=30,
+        bottomMargin=30,
+        leftMargin=25,
+        rightMargin=25
     )
 
     styles = getSampleStyleSheet()
@@ -65,8 +65,7 @@ def export_class_pdf(class_data, students):
 
     story.append(
         Paragraph(
-            f"Generated on: "
-            f"{datetime.now().strftime('%d/%m/%Y')}",
+            f"Generated on: {datetime.now().strftime('%d/%m/%Y')}",
             body_style
         )
     )
@@ -74,7 +73,7 @@ def export_class_pdf(class_data, students):
     story.append(Spacer(1, 20))
 
     # ==================================
-    # CLASS SUMMARY
+    # CLASS INFORMATION
     # ==================================
     story.append(
         Paragraph(
@@ -93,7 +92,7 @@ def export_class_pdf(class_data, students):
 
     summary_table = Table(
         summary_data,
-        colWidths=[150, 250]
+        colWidths=[180, 300]
     )
 
     summary_table.setStyle(TableStyle([
@@ -124,7 +123,7 @@ def export_class_pdf(class_data, students):
     story.append(Spacer(1, 25))
 
     # ==================================
-    # STUDENT TABLE
+    # STUDENT LIST
     # ==================================
     story.append(
         Paragraph(
@@ -165,7 +164,23 @@ def export_class_pdf(class_data, students):
             student["risk"]
         ])
 
-    student_table = Table(table_data)
+    student_table = Table(
+        table_data,
+        colWidths=[
+            40,   # ID
+            80,   # Student
+            60,   # Attendance
+            45,   # Quiz
+            60,   # Homework
+            65,   # Assignment
+            55,   # Midterm
+            45,   # Final
+            70,   # Participation
+            50,   # Project
+            55,   # Behavior
+            45    # Risk
+        ]
+    )
 
     style = [
         ("BACKGROUND", (0, 0), (-1, 0),
@@ -177,6 +192,8 @@ def export_class_pdf(class_data, students):
         ("FONTNAME", (0, 0), (-1, 0),
          "Helvetica-Bold"),
 
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+
         ("GRID", (0, 0), (-1, -1),
          1, colors.black),
 
@@ -187,7 +204,9 @@ def export_class_pdf(class_data, students):
          "MIDDLE")
     ]
 
-    # Risk colors
+    # ==================================
+    # RISK COLORS
+    # ==================================
     for row_index, student in enumerate(
         students,
         start=1
@@ -196,25 +215,19 @@ def export_class_pdf(class_data, students):
         risk = student["risk"]
 
         if risk == "Low":
-            color = colors.HexColor(
-                "#DCFCE7"
-            )
+            risk_color = colors.HexColor("#DCFCE7")
 
         elif risk == "Medium":
-            color = colors.HexColor(
-                "#FEF3C7"
-            )
+            risk_color = colors.HexColor("#FEF3C7")
 
         else:
-            color = colors.HexColor(
-                "#FEE2E2"
-            )
+            risk_color = colors.HexColor("#FEE2E2")
 
         style.append((
             "BACKGROUND",
             (-1, row_index),
             (-1, row_index),
-            color
+            risk_color
         ))
 
     student_table.setStyle(
@@ -237,11 +250,9 @@ def export_class_pdf(class_data, students):
 
     story.append(
         Paragraph(
-            "Students with weak attendance "
-            "and unstable academic "
-            "performance should receive "
-            "additional intervention, "
-            "monitoring, and tutoring.",
+            "Students with weak attendance and unstable "
+            "academic performance should receive additional "
+            "intervention, monitoring, and tutoring.",
             body_style
         )
     )
