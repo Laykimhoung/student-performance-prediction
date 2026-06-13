@@ -6,6 +6,11 @@ from reports.pdf_generator import export_class_pdf
 from reports.excel_generator import export_class_excel
 import customtkinter as ctk
 
+from database.crud import (
+    get_students_by_class,
+    get_student_detail
+)
+
 
 class ClassDetailPage(ctk.CTkFrame):
 
@@ -32,99 +37,42 @@ class ClassDetailPage(ctk.CTkFrame):
     # ==================================
     def load_students(self):
 
-        return [
-            {
-                "id": "001",
-                "name": "Dara",
-                "class": self.class_data["name"],
-                "semester": 1,
-                "attendance": 92,
-                "quiz": 84,
-                "homework": 81,
-                "assignment": 78,
-                "midterm": 75,
-                "final": 89,
-                "participation": 85,
-                "project": 90,
-                "behavior": 88,
-                "risk": "Low",
-                "risk_factors": [
-                    "✓ Strong attendance consistency",
-                    "✓ High final performance",
-                    "✓ Homework submission stable"
-                ],
-                "recommendation":
-                    "Continue monitoring progress.\n"
-                    "Maintain attendance and\n"
-                    "encourage participation."
-            },
+        students = []
 
-            {
-                "id": "002",
-                "name": "Sokha",
-                "class": self.class_data["name"],
-                "semester": 1,
-                "attendance": 58,
-                "quiz": 54,
-                "homework": 62,
-                "assignment": 58,
-                "midterm": 60,
-                "final": 57,
-                "participation": 45,
-                "project": 59,
-                "behavior": 68,
-                "risk": "High",
-                "risk_factors": [
-                    "⚠ Low attendance",
-                    "⚠ Weak quiz performance",
-                    "⚠ Poor participation",
-                    "⚠ Final score declining"
-                ],
-                "recommendation":
-                    "Schedule intervention.\n"
-                    "Increase monitoring and\n"
-                    "provide academic support."
-            },
+        class_id = self.class_data["id"]
 
-            {
-                "id": "003",
-                "name": "Lina",
-                "class": self.class_data["name"],
-                "semester": 1,
-                "attendance": 81,
-                "quiz": 72,
-                "homework": 74,
-                "assignment": 71,
-                "midterm": 79,
-                "final": 80,
-                "participation": 83,
-                "project": 82,
-                "behavior": 84,
-                "risk": "Medium",
-                "risk_factors": [
-                    "⚠ Quiz slightly declining",
-                    "✓ Stable attendance",
-                    "✓ Good participation"
-                ],
-                "recommendation":
-                    "Monitor quiz trend.\n"
-                    "Provide light academic support."
-            }
-        ]
-    def calculate_average(self, student):
+        rows = get_students_by_class(class_id)
 
-        scores = [
-            student["quiz"],
-            student["homework"],
-            student["assignment"],
-            student["midterm"],
-            student["final"],
-            student["participation"],
-            student["project"],
-            student["behavior"]
-        ]
+        for row in rows:
 
-        return round(sum(scores) / len(scores), 1)
+            student_id = row[0]
+
+            detail = get_student_detail(student_id)
+
+            students.append(
+                {
+                    "id": detail[0],
+                    "code": detail[1],
+                    "name": detail[2],
+                    "gender": detail[3],
+
+                    "quiz": detail[5] or 0,
+                    "homework": detail[6] or 0,
+                    "attendance": detail[7] or 0,
+                    "assignment": detail[8] or 0,
+                    "midterm": detail[9] or 0,
+                    "final": detail[10] or 0,
+                    "participation": detail[11] or 0,
+                    "project": detail[12] or 0,
+                    "behavior": detail[13] or 0,
+
+                    "average": detail[14] or 0,
+                    "risk": detail[15] or "Low",
+                    "recommendation": detail[16] or ""
+                }
+            )
+        return students
+    
     # ==================================
     # OPEN STUDENT DETAIL
     # ==================================
@@ -307,9 +255,8 @@ class ClassDetailPage(ctk.CTkFrame):
 
         stats = [
             (str(class_info["students"]), "Students", "#3B82F6"),
-            (f'{class_info["attendance"]}%', "Attendance", "#10B981"),
-            (f'{class_info["average"]}%', "Average", "#F59E0B"),
-            (str(class_info["risk"]), "At Risk", "#EF4444")
+            (f'{class_info["average"]}%', "Average", "#10B981"),
+            (str(class_info["risk"]), "High Risk", "#EF4444")
         ]
 
         for value, label, color in stats:
@@ -441,7 +388,7 @@ class ClassDetailPage(ctk.CTkFrame):
 
         for student in self.students:
 
-            average = self.calculate_average(student)
+            average = student["average"]
 
             row = ctk.CTkFrame(
                 scroll_table,

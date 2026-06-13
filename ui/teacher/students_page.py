@@ -1,6 +1,10 @@
 import customtkinter as ctk
 
 from ui.teacher.student_detail_page import StudentDetailPage
+from database.crud import (
+    get_student_list,
+    get_all_class_names
+)
 
 
 class StudentsPage(ctk.CTkFrame):
@@ -26,114 +30,27 @@ class StudentsPage(ctk.CTkFrame):
     # ==================================
     def load_students(self):
 
-        return [
-            {
-                "id": "001",
-                "name": "Dara",
-                "class": "Grade 12A",
-                "semester": 1,
-                "attendance": 92,
-                "quiz": 84,
-                "homework": 81,
-                "assignment": 78,
-                "midterm": 75,
-                "final": 89,
-                "participation": 85,
-                "project": 90,
-                "behavior": 88,
-                "risk": "Low",
-                "risk_factors": [
-                    "✓ Strong attendance consistency",
-                    "✓ High final performance",
-                    "✓ Homework submission stable"
-                ],
-                "recommendation":
-                    "Continue monitoring progress.\n"
-                    "Maintain attendance and\n"
-                    "encourage participation."
-            },
+        students = []
 
-            {
-                "id": "002",
-                "name": "Sokha",
-                "class": "Grade 12A",
-                "semester": 1,
-                "attendance": 58,
-                "quiz": 54,
-                "homework": 62,
-                "assignment": 58,
-                "midterm": 60,
-                "final": 57,
-                "participation": 45,
-                "project": 59,
-                "behavior": 68,
-                "risk": "High",
-                "risk_factors": [
-                    "⚠ Low attendance",
-                    "⚠ Weak quiz performance",
-                    "⚠ Poor participation",
-                    "⚠ Final score declining"
-                ],
-                "recommendation":
-                    "Schedule intervention.\n"
-                    "Increase monitoring and\n"
-                    "provide academic support."
-            },
+        for row in get_student_list():
 
-            {
-                "id": "003",
-                "name": "Lina",
-                "class": "Grade 12A",
-                "semester": 1,
-                "attendance": 81,
-                "quiz": 72,
-                "homework": 74,
-                "assignment": 71,
-                "midterm": 79,
-                "final": 80,
-                "participation": 83,
-                "project": 82,
-                "behavior": 84,
-                "risk": "Medium",
-                "risk_factors": [
-                    "⚠ Quiz slightly declining",
-                    "✓ Stable attendance",
-                    "✓ Good participation"
-                ],
-                "recommendation":
-                    "Monitor quiz trend.\n"
-                    "Provide light academic support."
-            },
+            students.append(
+                {
+                    "id": row[0],
+                    "code": row[1],
+                    "name": row[2],
+                    "class": row[3],
+                    "average": row[4] or 0,
+                    "risk": row[5] or "Low"
+                }
+            )
 
-            {
-                "id": "004",
-                "name": "Nita",
-                "class": "Grade 12A",
-                "semester": 1,
-                "attendance": 94,
-                "quiz": 91,
-                "homework": 90,
-                "assignment": 92,
-                "midterm": 89,
-                "final": 94,
-                "participation": 95,
-                "project": 93,
-                "behavior": 90,
-                "risk": "Low",
-                "risk_factors": [
-                    "✓ Excellent attendance",
-                    "✓ Strong academic trend",
-                    "✓ High engagement"
-                ],
-                "recommendation":
-                    "Maintain current performance."
-            }
-        ]
+        return students
 
     # ==================================
     # OPEN DETAIL PAGE
     # ==================================
-    def open_student_detail(self, student_data):
+    def open_student_detail(self, student_id):
 
         parent = self.master
 
@@ -141,7 +58,7 @@ class StudentsPage(ctk.CTkFrame):
 
         detail_page = StudentDetailPage(
             parent,
-            student_data=student_data,
+            student_data=student_id,
             back_command=self.go_back
         )
 
@@ -212,15 +129,13 @@ class StudentsPage(ctk.CTkFrame):
             top_bar,
             width=180,
             height=48,
-            values=[
-                "Grade 12A",
-                "Grade 12B",
-                "Grade 11A",
-                "Grade 11B"
-            ]
+            values=get_all_class_names()
         )
 
-        class_dropdown.set("Grade 12A")
+        classes = get_all_class_names()
+        if classes:
+            class_dropdown.set(classes[0])
+            
         class_dropdown.pack(
             side="right"
         )
@@ -306,18 +221,7 @@ class StudentsPage(ctk.CTkFrame):
 
         for student in self.students:
 
-            avg = round(
-                (
-                    student["quiz"]
-                    + student["homework"]
-                    + student["assignment"]
-                    + student["midterm"]
-                    + student["final"]
-                    + student["participation"]
-                    + student["project"]
-                    + student["behavior"]
-                ) / 8
-            )
+            avg = student["average"]
 
             row = ctk.CTkFrame(
                 scroll_table,
@@ -345,7 +249,7 @@ class StudentsPage(ctk.CTkFrame):
 
             ctk.CTkLabel(
                 info_frame,
-                text=f'{student["name"]} ({student["id"]})',
+                text=f'{student["name"]} ({student["code"]})',
                 font=("Segoe UI", 18, "bold")
             ).pack(anchor="w")
 
@@ -382,8 +286,8 @@ class StudentsPage(ctk.CTkFrame):
                 corner_radius=14,
                 fg_color="#EF4444",
                 hover_color="#DC2626",
-                command=lambda s=student:
-                self.open_student_detail(s)
+                command=lambda sid=student["id"]:
+                self.open_student_detail(sid)
             ).pack(
                 side="right",
                 padx=25

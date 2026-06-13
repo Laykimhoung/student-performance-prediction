@@ -1,5 +1,10 @@
 import customtkinter as ctk
-
+from database.crud import (
+    get_student_dropdown_by_class,
+    get_student_id_by_dropdown,
+    update_assessment,
+    update_prediction
+)
 
 class GradeEntryPage(ctk.CTkFrame):
 
@@ -22,16 +27,23 @@ class GradeEntryPage(ctk.CTkFrame):
         self.build_ui()
 
     # ==================================
-    # MOCK DATA
+    # DATA
     # ==================================
     def load_students(self):
 
-        return [
-            "Dara (001)",
-            "Sokha (002)",
-            "Lina (003)",
-            "Nita (004)"
-        ]
+        students = []
+
+        class_id = self.class_data["id"]
+
+        rows = get_student_dropdown_by_class(class_id)
+
+        for student in rows:
+
+            students.append(
+                f"{student[2]} ({student[1]})"
+            )
+
+        return students
 
     # ==================================
     # CALCULATE RESULT
@@ -85,21 +97,93 @@ class GradeEntryPage(ctk.CTkFrame):
     # ==================================
     def save_grade(self):
 
-        values = {
-            "Quiz": self.quiz.get(),
-            "Homework": self.homework.get(),
-            "Attendance": self.attendance.get(),
-            "Assignment": self.assignment.get(),
-            "Midterm": self.midterm.get(),
-            "Final": self.final_exam.get(),
-            "Participation": self.participation.get(),
-            "Project": self.project.get(),
-            "Behavior": self.behavior.get()
-        }
+        try:
 
-        self.calculate_result()
+            student_text = self.student_dropdown.get()
 
-        print("Saved:", values)
+            student_id = get_student_id_by_dropdown(
+                student_text
+            )
+
+            if not student_id:
+                return
+
+            quiz = float(self.quiz.get() or 0)
+            homework = float(self.homework.get() or 0)
+            attendance = float(self.attendance.get() or 0)
+            assignment = float(self.assignment.get() or 0)
+            midterm = float(self.midterm.get() or 0)
+            final = float(self.final_exam.get() or 0)
+            participation = float(self.participation.get() or 0)
+            project = float(self.project.get() or 0)
+            behavior = float(self.behavior.get() or 0)
+
+            average = round(
+                (
+                    quiz +
+                    homework +
+                    attendance +
+                    assignment +
+                    midterm +
+                    final +
+                    participation +
+                    project +
+                    behavior
+                ) / 9,
+                1
+            )
+
+            if average >= 80:
+
+                risk = "Low"
+
+                recommendation = (
+                    "Maintain current performance."
+                )
+
+            elif average >= 65:
+
+                risk = "Medium"
+
+                recommendation = (
+                    "Needs additional monitoring."
+                )
+
+            else:
+
+                risk = "High"
+
+                recommendation = (
+                    "Immediate intervention recommended."
+                )
+
+            update_assessment(
+                student_id,
+                quiz,
+                homework,
+                attendance,
+                assignment,
+                midterm,
+                final,
+                participation,
+                project,
+                behavior,
+                average
+            )
+
+            update_prediction(
+                student_id,
+                risk,
+                recommendation
+            )
+
+            self.calculate_result()
+
+            print("Assessment saved successfully")
+
+        except ValueError:
+
+            print("Invalid score input")
 
     # ==================================
     # UI

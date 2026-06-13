@@ -77,23 +77,18 @@ def get_high_risk_students():
 # CLASSES
 # ==================================
 
-def get_all_classes():
+def get_all_class_names():
 
     conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT
-        c.id,
-        c.class_name,
-        t.full_name
-    FROM classes c
-    JOIN teachers t
-        ON c.teacher_id = t.id
-    ORDER BY c.class_name
+    SELECT class_name
+    FROM classes
+    ORDER BY class_name
     """)
 
-    data = cursor.fetchall()
+    data = [row[0] for row in cursor.fetchall()]
 
     conn.close()
 
@@ -420,6 +415,27 @@ def get_student_dropdown():
     FROM students
     ORDER BY student_name
     """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_student_dropdown_by_class(class_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        student_code,
+        student_name
+    FROM students
+    WHERE class_id = ?
+    ORDER BY student_name
+    """, (class_id,))
 
     data = cursor.fetchall()
 
