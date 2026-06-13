@@ -1,5 +1,5 @@
 from ui.components.login_template import LoginTemplate
-
+from database.crud import validate_admin
 
 class AdminLoginPage(LoginTemplate):
 
@@ -19,13 +19,15 @@ class AdminLoginPage(LoginTemplate):
 
     def login(self):
 
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get().strip()
 
-        if username == "admin" and password == "admin":
+        admin = validate_admin(
+            username,
+            password
+        )
 
-            # content -> MainWindow
+        if admin:
             self.master.master.show_admin_dashboard()
-
         else:
             print("Wrong admin credentials")

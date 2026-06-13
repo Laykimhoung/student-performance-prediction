@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from ui.teacher.class_detail_page import ClassDetailPage
+from database.crud import get_class_cards
 
 
 class ClassroomPage(ctk.CTkFrame):
@@ -20,36 +21,21 @@ class ClassroomPage(ctk.CTkFrame):
     # ==================================
     def load_classes(self):
 
-        return [
-            {
-                "name": "Grade 12A",
-                "students": 36,
-                "attendance": 92,
-                "average": 84,
-                "risk": 4
-            },
-            {
-                "name": "Grade 12B",
-                "students": 34,
-                "attendance": 89,
-                "average": 80,
-                "risk": 6
-            },
-            {
-                "name": "Grade 11A",
-                "students": 31,
-                "attendance": 94,
-                "average": 87,
-                "risk": 2
-            },
-            {
-                "name": "Grade 11B",
-                "students": 29,
-                "attendance": 85,
-                "average": 77,
-                "risk": 7
-            }
-        ]
+        classes = []
+
+        for row in get_class_cards():
+
+            classes.append(
+                {
+                    "id": row[0],
+                    "name": row[1],
+                    "students": row[2],
+                    "average": row[3] or 0,
+                    "risk": row[4] or 0
+                }
+            )
+
+        return classes
 
     # ==================================
     # OPEN CLASS
@@ -182,8 +168,7 @@ class ClassroomPage(ctk.CTkFrame):
             stats = [
                 ("Students", class_info["students"]),
                 ("Average", f'{class_info["average"]}%'),
-                ("Attendance", f'{class_info["attendance"]}%'),
-                ("At Risk", class_info["risk"])
+                ("High Risk", class_info["risk"])
             ]
 
             for label, value in stats:

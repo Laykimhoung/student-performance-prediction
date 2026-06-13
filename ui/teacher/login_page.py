@@ -1,4 +1,5 @@
 from ui.components.login_template import LoginTemplate
+from database.crud import validate_teacher
 
 
 class TeacherLoginPage(LoginTemplate):
@@ -19,13 +20,15 @@ class TeacherLoginPage(LoginTemplate):
 
     def login(self):
 
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get().strip()
 
-        if username == "teacher" and password == "teacher":
+        teacher = validate_teacher(
+            username,
+            password
+        )
 
-            # content -> MainWindow
+        if teacher:
             self.master.master.show_teacher_dashboard()
-
         else:
             print("Wrong teacher credentials")

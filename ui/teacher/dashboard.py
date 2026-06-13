@@ -1,5 +1,11 @@
 from ui.components.dashboard_shell import DashboardShell
 import customtkinter as ctk
+from database.crud import (
+    get_total_students,
+    get_total_classes,
+    get_high_risk_students,
+    get_average_score
+)
 
 
 class TeacherDashboard(DashboardShell):
@@ -70,6 +76,11 @@ class TeacherDashboard(DashboardShell):
     # ==================================
     def build_dashboard(self):
 
+        total_classes = get_total_classes()
+        total_students = get_total_students()
+        high_risk = get_high_risk_students()
+        average_score = get_average_score()       
+
         # ===============================
         # HEADER
         # ===============================
@@ -110,10 +121,10 @@ class TeacherDashboard(DashboardShell):
         )
 
         stats = [
-            ("8", "Classes", "#3B82F6"),
-            ("240", "Students", "#10B981"),
-            ("92%", "Attendance", "#F59E0B"),
-            ("12", "High Risk", "#EF4444")
+            (str(total_classes), "Classes", "#3B82F6"),
+            (str(total_students), "Students", "#10B981"),
+            (f"{average_score}%", "Average Score", "#F59E0B"),
+            (str(high_risk), "High Risk", "#EF4444")
         ]
 
         for value, label, color in stats:
@@ -254,7 +265,7 @@ class TeacherDashboard(DashboardShell):
             ("Top Class", "Grade 12A", "#10B981"),
             ("Lowest Class", "Grade 11B", "#EF4444"),
             ("High Risk Students", "12 Students", "#F59E0B"),
-            ("Attendance Trend", "Improving ↑", "#3B82F6")
+            (("AI Status", "Ready", "#3B82F6"))
         ]
 
         for title, value, color in insights:
