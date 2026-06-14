@@ -84,7 +84,7 @@ class ClassDetailPage(ctk.CTkFrame):
 
         StudentDetailPage(
             parent,
-            student_data=student,
+            student_id=student["id"],
             back_command=self.go_back
         ).pack(
             fill="both",
@@ -139,6 +139,8 @@ class ClassDetailPage(ctk.CTkFrame):
 
         StudentsPage(
             parent,
+            class_id=self.class_data["id"],
+            class_name=self.class_data["name"],
             back_command=self.go_back
         ).pack(
             fill="both",

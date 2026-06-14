@@ -3,7 +3,8 @@ import customtkinter as ctk
 from ui.teacher.student_detail_page import StudentDetailPage
 from database.crud import (
     get_student_list,
-    get_all_class_names
+    get_all_class_names,
+    get_student_detail
 )
 
 
@@ -12,6 +13,8 @@ class StudentsPage(ctk.CTkFrame):
     def __init__(
         self,
         parent,
+        class_id=None,
+        class_name=None,
         back_command=None
     ):
         super().__init__(
@@ -21,18 +24,27 @@ class StudentsPage(ctk.CTkFrame):
 
         self.back_command = back_command
 
-        self.students = self.load_students()
+        self.class_id = class_id
+        self.class_name = class_name
+
+        self.all_students = self.load_students()
+        self.students = self.all_students.copy()
 
         self.build_ui()
 
     # ==================================
-    # STUDENT DATA
+    # LOAD STUDENTS
     # ==================================
     def load_students(self):
 
         students = []
 
         for row in get_student_list():
+
+            if self.class_name:
+
+                if row[3] != self.class_name:
+                    continue
 
             students.append(
                 {
@@ -48,7 +60,7 @@ class StudentsPage(ctk.CTkFrame):
         return students
 
     # ==================================
-    # OPEN DETAIL PAGE
+    # OPEN DETAIL
     # ==================================
     def open_student_detail(self, student_id):
 
@@ -56,13 +68,11 @@ class StudentsPage(ctk.CTkFrame):
 
         self.destroy()
 
-        detail_page = StudentDetailPage(
+        StudentDetailPage(
             parent,
-            student_data=student_id,
+            student_id=student_id,
             back_command=self.go_back
-        )
-
-        detail_page.pack(
+        ).pack(
             fill="both",
             expand=True
         )
@@ -71,160 +81,119 @@ class StudentsPage(ctk.CTkFrame):
     # BACK
     # ==================================
     def go_back(self):
+
         if self.back_command:
             self.back_command()
 
     # ==================================
-    # UI
+    # PREVIEW
     # ==================================
-    def build_ui(self):
+    def show_preview(self, student):
 
-        title = ctk.CTkLabel(
-            self,
-            text="Students",
-            font=("Segoe UI", 40, "bold")
-        )
-        title.pack(
-            anchor="w",
-            padx=35,
-            pady=(25, 5)
-        )
+        detail = get_student_detail(student["id"])
 
-        subtitle = ctk.CTkLabel(
-            self,
-            text="Manage student performance and monitor academic risk",
-            font=("Segoe UI", 17),
-            text_color="#94A3B8"
-        )
-        subtitle.pack(
-            anchor="w",
-            padx=35
+        if not detail:
+            return
+
+        risk_color = (
+            "#EF4444"
+            if detail[15] == "High"
+            else "#F59E0B"
+            if detail[15] == "Medium"
+            else "#10B981"
         )
 
-        # ======================
-        # TOP BAR
-        # ======================
-        top_bar = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
+        self.preview_name.configure(
+            text=detail[2]
         )
 
-        top_bar.pack(
-            fill="x",
-            padx=35,
-            pady=25
+        self.preview_code.configure(
+            text=f"Code: {detail[1]}"
         )
 
-        search_entry = ctk.CTkEntry(
-            top_bar,
-            width=430,
-            height=48,
-            corner_radius=14,
-            placeholder_text="Search student..."
-        )
-        search_entry.pack(side="left")
-
-        # CLASS DROPDOWN
-        class_dropdown = ctk.CTkComboBox(
-            top_bar,
-            width=180,
-            height=48,
-            values=get_all_class_names()
+        self.preview_class.configure(
+            text=f"Class: {detail[4]}"
         )
 
-        classes = get_all_class_names()
-        if classes:
-            class_dropdown.set(classes[0])
-            
-        class_dropdown.pack(
-            side="right"
+        self.preview_average.configure(
+            text=f"Average: {detail[14]}"
         )
 
-        # BACK BUTTON
-        if self.back_command:
-
-            back_btn = ctk.CTkButton(
-                top_bar,
-                text="← Back",
-                width=120,
-                height=48,
-                corner_radius=14,
-                fg_color="#EF4444",
-                hover_color="#DC2626",
-                font=("Segoe UI", 15, "bold"),
-                command=self.go_back
-            )
-
-            back_btn.pack(
-                side="right",
-                padx=(0, 10)
-            )
-
-        # ======================
-        # BODY
-        # ======================
-        body = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
+        self.preview_risk.configure(
+            text=f"Risk: {detail[15]}",
+            text_color=risk_color
         )
 
-        body.pack(
-            fill="both",
-            expand=True,
-            padx=30,
-            pady=(0, 25)
+        self.preview_scores.configure(
+            text=
+            f"Attendance: {detail[7]}\n"
+            f"Quiz: {detail[5]}\n"
+            f"Homework: {detail[6]}\n"
+            f"Assignment: {detail[8]}\n"
+            f"Midterm: {detail[9]}\n"
+            f"Final: {detail[10]}\n"
+            f"Participation: {detail[11]}\n"
+            f"Project: {detail[12]}\n"
+            f"Behavior: {detail[13]}"
         )
 
-        body.grid_columnconfigure(0, weight=7)
-        body.grid_columnconfigure(1, weight=4)
-        body.grid_rowconfigure(0, weight=1)
+    # ==================================
+    # FILTER CLASS
+    # ==================================
+    def filter_by_class(self, selected_class):
 
-        # ======================
-        # LEFT PANEL
-        # ======================
-        table_frame = ctk.CTkFrame(
-            body,
-            fg_color="#0F172A",
-            corner_radius=28
-        )
+        self.class_name = selected_class
 
-        table_frame.grid(
-            row=0,
-            column=0,
-            sticky="nsew",
-            padx=(0, 18)
-        )
+        self.students = []
 
-        table_title = ctk.CTkLabel(
-            table_frame,
-            text="Student List",
-            font=("Segoe UI", 26, "bold")
-        )
+        for student in self.all_students:
 
-        table_title.pack(
-            anchor="w",
-            padx=30,
-            pady=(28, 20)
-        )
+            if student["class"] == selected_class:
+                self.students.append(student)
 
-        scroll_table = ctk.CTkScrollableFrame(
-            table_frame,
-            fg_color="transparent"
-        )
+        self.search_entry.delete(0, "end")
+        self.refresh_student_list()
 
-        scroll_table.pack(
-            fill="both",
-            expand=True,
-            padx=25,
-            pady=(0, 25)
-        )
+    # ==================================
+    # SEARCH
+    # ==================================
+    def search_students(self, event=None):
+
+        keyword = self.search_entry.get().lower()
+
+        self.students = []
+
+        for student in self.all_students:
+
+            if self.class_name:
+
+                if student["class"] != self.class_name:
+                    continue
+
+            if (
+                keyword in student["name"].lower()
+                or
+                keyword in student["code"].lower()
+            ):
+
+                self.students.append(student)
+
+        self.refresh_student_list()
+
+    # ==================================
+    # REFRESH LIST
+    # ==================================
+    def refresh_student_list(self):
+
+        for widget in self.scroll_table.winfo_children():
+            widget.destroy()
 
         for student in self.students:
 
             avg = student["average"]
 
             row = ctk.CTkFrame(
-                scroll_table,
+                self.scroll_table,
                 fg_color="#111827",
                 corner_radius=20,
                 height=90
@@ -268,12 +237,14 @@ class StudentsPage(ctk.CTkFrame):
                 else "#10B981"
             )
 
-            ctk.CTkLabel(
+            risk_label = ctk.CTkLabel(
                 row,
                 text=student["risk"],
                 font=("Segoe UI", 17, "bold"),
                 text_color=risk_color
-            ).pack(
+            )
+
+            risk_label.pack(
                 side="left",
                 padx=40
             )
@@ -293,9 +264,172 @@ class StudentsPage(ctk.CTkFrame):
                 padx=25
             )
 
-        # ======================
-        # RIGHT PANEL
-        # ======================
+            row.bind(
+                "<Button-1>",
+                lambda e, s=student:
+                self.show_preview(s)
+            )
+
+            info_frame.bind(
+                "<Button-1>",
+                lambda e, s=student:
+                self.show_preview(s)
+            )
+
+            risk_label.bind(
+                "<Button-1>",
+                lambda e, s=student:
+                self.show_preview(s)
+            )
+
+    # ==================================
+    # UI
+    # ==================================
+    def build_ui(self):
+
+        title = ctk.CTkLabel(
+            self,
+            text="Students",
+            font=("Segoe UI", 40, "bold")
+        )
+
+        title.pack(
+            anchor="w",
+            padx=35,
+            pady=(25, 5)
+        )
+
+        subtitle = ctk.CTkLabel(
+            self,
+            text="Manage student performance and monitor academic risk",
+            font=("Segoe UI", 17),
+            text_color="#94A3B8"
+        )
+
+        subtitle.pack(
+            anchor="w",
+            padx=35
+        )
+
+        # TOP BAR
+        top_bar = ctk.CTkFrame(
+            self,
+            fg_color="transparent"
+        )
+
+        top_bar.pack(
+            fill="x",
+            padx=35,
+            pady=25
+        )
+
+        self.search_entry = ctk.CTkEntry(
+            top_bar,
+            width=430,
+            height=48,
+            corner_radius=14,
+            placeholder_text="Search student..."
+        )
+
+        self.search_entry.pack(
+            side="left"
+        )
+
+        self.search_entry.bind(
+            "<KeyRelease>",
+            self.search_students
+        )
+
+        if self.class_name is None:
+
+            self.class_dropdown = ctk.CTkComboBox(
+                top_bar,
+                width=180,
+                height=48,
+                values=get_all_class_names(),
+                command=self.filter_by_class
+            )
+
+            self.class_dropdown.pack(
+                side="right"
+            )
+
+            self.class_dropdown.set("AU-CS")
+            self.class_name = "AU-CS"
+
+        if self.back_command:
+
+            back_btn = ctk.CTkButton(
+                top_bar,
+                text="← Back",
+                width=120,
+                height=48,
+                corner_radius=14,
+                fg_color="#EF4444",
+                hover_color="#DC2626",
+                font=("Segoe UI", 15, "bold"),
+                command=self.go_back
+            )
+
+            back_btn.pack(
+                side="right",
+                padx=(0, 10)
+            )
+
+        # BODY
+        body = ctk.CTkFrame(
+            self,
+            fg_color="transparent"
+        )
+
+        body.pack(
+            fill="both",
+            expand=True,
+            padx=30,
+            pady=(0, 25)
+        )
+
+        body.grid_columnconfigure(0, weight=7)
+        body.grid_columnconfigure(1, weight=4)
+        body.grid_rowconfigure(0, weight=1)
+
+        # LEFT
+        table_frame = ctk.CTkFrame(
+            body,
+            fg_color="#0F172A",
+            corner_radius=28
+        )
+
+        table_frame.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
+            padx=(0, 18)
+        )
+
+        ctk.CTkLabel(
+            table_frame,
+            text="Student List",
+            font=("Segoe UI", 26, "bold")
+        ).pack(
+            anchor="w",
+            padx=30,
+            pady=(28, 20)
+        )
+
+        self.scroll_table = ctk.CTkScrollableFrame(
+            table_frame,
+            fg_color="transparent"
+        )
+
+        self.scroll_table.pack(
+            fill="both",
+            expand=True,
+            padx=25,
+            pady=(0, 25)
+        )
+
+        # RIGHT
         preview = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
@@ -308,24 +442,92 @@ class StudentsPage(ctk.CTkFrame):
             sticky="nsew"
         )
 
-        preview_title = ctk.CTkLabel(
+        ctk.CTkLabel(
             preview,
             text="Student Preview",
             font=("Segoe UI", 26, "bold")
-        )
-
-        preview_title.pack(
+        ).pack(
             anchor="w",
             padx=30,
             pady=(28, 25)
         )
 
-        preview_text = ctk.CTkLabel(
+        self.preview_name = ctk.CTkLabel(
             preview,
-            text="Click View to open\nstudent profile",
-            justify="center",
-            font=("Segoe UI", 20),
-            text_color="#94A3B8"
+            text="Select a Student",
+            font=("Segoe UI", 24, "bold")
         )
 
-        preview_text.pack(expand=True)
+        self.preview_name.pack(
+            anchor="w",
+            padx=30,
+            pady=(20, 10)
+        )
+
+        self.preview_code = ctk.CTkLabel(
+            preview,
+            text="Code: -",
+            font=("Segoe UI", 16)
+        )
+
+        self.preview_code.pack(
+            anchor="w",
+            padx=30
+        )
+
+        self.preview_class = ctk.CTkLabel(
+            preview,
+            text="Class: -",
+            font=("Segoe UI", 16)
+        )
+
+        self.preview_class.pack(
+            anchor="w",
+            padx=30,
+            pady=(10, 0)
+        )
+
+        self.preview_average = ctk.CTkLabel(
+            preview,
+            text="Average: -",
+            font=("Segoe UI", 16)
+        )
+
+        self.preview_average.pack(
+            anchor="w",
+            padx=30,
+            pady=(10, 0)
+        )
+
+        self.preview_risk = ctk.CTkLabel(
+            preview,
+            text="Risk: -",
+            font=("Segoe UI", 18, "bold")
+        )
+
+        self.preview_risk.pack(
+            anchor="w",
+            padx=30,
+            pady=(15, 0)
+        )
+
+        self.preview_scores = ctk.CTkLabel(
+            preview,
+            text="",
+            justify="left",
+            font=("Segoe UI", 15)
+        )
+
+        self.preview_scores.pack(
+            anchor="w",
+            padx=30,
+            pady=(20, 0)
+        )
+
+        if self.class_name:
+
+            self.filter_by_class(self.class_name)
+
+        else:
+
+            self.refresh_student_list()
