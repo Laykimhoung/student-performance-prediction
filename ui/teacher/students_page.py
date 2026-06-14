@@ -68,11 +68,28 @@ class StudentsPage(ctk.CTkFrame):
 
         self.destroy()
 
-        StudentDetailPage(
+        def back_to_students():
+
+            detail_page.destroy()
+
+            page = StudentsPage(
+                parent,
+                class_name=self.class_name,
+                back_command=self.back_command
+            )
+
+            page.pack(
+                fill="both",
+                expand=True
+            )
+
+        detail_page = StudentDetailPage(
             parent,
             student_id=student_id,
-            back_command=self.go_back
-        ).pack(
+            back_command=back_to_students
+        )
+
+        detail_page.pack(
             fill="both",
             expand=True
         )

@@ -55,7 +55,7 @@ def get_total_teachers():
     return total
 
 
-def get_high_risk_students():
+def get_high_risk_count():
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -72,6 +72,96 @@ def get_high_risk_students():
 
     return total
 
+def get_top_class():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        c.class_name,
+        ROUND(AVG(a.average), 1)
+
+    FROM classes c
+
+    JOIN students s
+        ON c.id = s.class_id
+
+    JOIN assessments a
+        ON s.id = a.student_id
+
+    GROUP BY c.id
+
+    ORDER BY AVG(a.average) DESC
+
+    LIMIT 1
+    """)
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_lowest_class():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        c.class_name,
+        ROUND(AVG(a.average), 1)
+
+    FROM classes c
+
+    JOIN students s
+        ON c.id = s.class_id
+
+    JOIN assessments a
+        ON s.id = a.student_id
+
+    GROUP BY c.id
+
+    ORDER BY AVG(a.average)
+
+    LIMIT 1
+    """)
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_recent_high_risk_students():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        s.student_name,
+        c.class_name
+
+    FROM students s
+
+    JOIN classes c
+        ON s.class_id = c.id
+
+    JOIN predictions p
+        ON s.id = p.student_id
+
+    WHERE p.risk_level = 'High'
+
+    LIMIT 5
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
 
 # ==================================
 # CLASSES
@@ -550,3 +640,214 @@ def get_student_id_by_name(student_name):
     conn.close()
 
     return result[0] if result else None
+
+# ==================================
+# ANALYTICS
+# ==================================
+
+def get_analytics_summary(class_name=None):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+    SELECT
+        COUNT(*),
+
+        SUM(
+            CASE
+                WHEN p.risk_level = 'High'
+                THEN 1
+                ELSE 0
+            END
+        ),
+
+        SUM(
+            CASE
+                WHEN p.risk_level = 'Medium'
+                THEN 1
+                ELSE 0
+            END
+        ),
+
+        SUM(
+            CASE
+                WHEN p.risk_level = 'Low'
+                THEN 1
+                ELSE 0
+            END
+        )
+
+    FROM students s
+
+    LEFT JOIN classes c
+        ON s.class_id = c.id
+
+    LEFT JOIN predictions p
+        ON s.id = p.student_id
+    """
+
+    params = []
+
+    if class_name:
+        query += " WHERE c.class_name = ?"
+        params.append(class_name)
+
+    cursor.execute(query, params)
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_assessment_averages(class_name=None):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+    SELECT
+
+        ROUND(AVG(attendance),1),
+        ROUND(AVG(quiz),1),
+        ROUND(AVG(homework),1),
+        ROUND(AVG(assignment),1),
+        ROUND(AVG(midterm),1),
+        ROUND(AVG(final),1),
+        ROUND(AVG(participation),1),
+        ROUND(AVG(project),1),
+        ROUND(AVG(behavior),1)
+
+    FROM assessments a
+
+    JOIN students s
+        ON a.student_id = s.id
+
+    JOIN classes c
+        ON s.class_id = c.id
+    """
+
+    params = []
+
+    if class_name:
+        query += " WHERE c.class_name = ?"
+        params.append(class_name)
+
+    cursor.execute(query, params)
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_risk_distribution(class_name=None):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+    SELECT
+        p.risk_level,
+        COUNT(*)
+
+    FROM predictions p
+
+    JOIN students s
+        ON p.student_id = s.id
+
+    JOIN classes c
+        ON s.class_id = c.id
+    """
+
+    params = []
+
+    if class_name:
+        query += " WHERE c.class_name = ?"
+        params.append(class_name)
+
+    query += """
+    GROUP BY p.risk_level
+    """
+
+    cursor.execute(query, params)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_high_risk_students(class_name=None):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+    SELECT
+        s.student_name,
+        a.average
+
+    FROM students s
+
+    JOIN assessments a
+        ON s.id = a.student_id
+
+    JOIN predictions p
+        ON s.id = p.student_id
+
+    JOIN classes c
+        ON s.class_id = c.id
+
+    WHERE p.risk_level = 'High'
+    """
+
+    params = []
+
+    if class_name:
+        query += " AND c.class_name = ?"
+        params.append(class_name)
+
+    query += """
+    ORDER BY a.average ASC
+    LIMIT 10
+    """
+
+    cursor.execute(query, params)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_score_distribution(class_name=None):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    query = """
+    SELECT average
+    FROM assessments a
+
+    JOIN students s
+        ON a.student_id = s.id
+
+    JOIN classes c
+        ON s.class_id = c.id
+    """
+
+    params = []
+
+    if class_name:
+        query += " WHERE c.class_name = ?"
+        params.append(class_name)
+
+    cursor.execute(query, params)
+
+    data = [row[0] for row in cursor.fetchall()]
+
+    conn.close()
+
+    return data

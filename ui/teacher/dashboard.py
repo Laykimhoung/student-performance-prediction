@@ -3,8 +3,11 @@ import customtkinter as ctk
 from database.crud import (
     get_total_students,
     get_total_classes,
-    get_high_risk_students,
-    get_average_score
+    get_high_risk_count,
+    get_average_score,
+    get_top_class,
+    get_lowest_class,
+    get_recent_high_risk_students
 )
 
 
@@ -78,8 +81,12 @@ class TeacherDashboard(DashboardShell):
 
         total_classes = get_total_classes()
         total_students = get_total_students()
-        high_risk = get_high_risk_students()
-        average_score = get_average_score()       
+        high_risk = get_high_risk_count()
+        average_score = get_average_score() 
+
+        top_class = get_top_class()
+        lowest_class = get_lowest_class()
+        recent_risks = get_recent_high_risk_students()      
 
         # ===============================
         # HEADER
@@ -215,13 +222,19 @@ class TeacherDashboard(DashboardShell):
             pady=(25, 20)
         )
 
-        alerts = [
-            "⚠ Sokha attendance dropped below 60%",
-            "⚠ Kimlong marked High Risk",
-            "✓ Grade 12A attendance improved",
-            "✓ Midterm scores uploaded",
-            "✓ Assignment report exported"
-        ]
+        alerts = []
+
+        for student, class_name in recent_risks:
+
+            alerts.append(
+                f"⚠ {student} marked High Risk ({class_name})"
+            )
+
+        if not alerts:
+
+            alerts.append(
+                "✓ No High Risk Students"
+            )
 
         for item in alerts:
 
@@ -262,10 +275,26 @@ class TeacherDashboard(DashboardShell):
         )
 
         insights = [
-            ("Top Class", "Grade 12A", "#10B981"),
-            ("Lowest Class", "Grade 11B", "#EF4444"),
-            ("High Risk Students", "12 Students", "#F59E0B"),
-            (("AI Status", "Ready", "#3B82F6"))
+            (
+                "Top Class",
+                top_class[0] if top_class else "-",
+                "#10B981"
+            ),
+            (
+                "Lowest Class",
+                lowest_class[0] if lowest_class else "-",
+                "#EF4444"
+            ),
+            (
+                "High Risk Students",
+                str(high_risk),
+                "#F59E0B"
+            ),
+            (
+                "AI Status",
+                "Ready",
+                "#3B82F6"
+            )
         ]
 
         for title, value, color in insights:
