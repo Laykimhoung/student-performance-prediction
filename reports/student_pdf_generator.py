@@ -8,8 +8,8 @@ from reportlab.platypus import (
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import pagesizes
-from pathlib import Path
 from datetime import datetime
+from tkinter import filedialog
 
 
 def calculate_average(student):
@@ -36,14 +36,15 @@ def export_student_pdf(student):
     # ==================================
     # SAVE LOCATION
     # ==================================
-    downloads_path = Path.home() / "Downloads"
-
-    file_name = (
-        f'{student["name"].replace(" ", "_")}'
-        f'_report.pdf'
+    file_path = filedialog.asksaveasfilename(
+        title="Save Student Report",
+        defaultextension=".pdf",
+        initialfile=f'{student["name"]}_report.pdf',
+        filetypes=[("PDF Files", "*.pdf")]
     )
 
-    file_path = downloads_path / file_name
+    if not file_path:
+        return
 
     # ==================================
     # PDF DOCUMENT
@@ -110,8 +111,6 @@ def export_student_pdf(student):
         ["Student", student["name"]],
         ["ID", student["id"]],
         ["Class", student["class"]],
-        ["Semester", student.get("semester", 1)],
-        ["Attendance", f'{student["attendance"]}%'],
         ["Average Score", f"{average}%"],
         ["Risk Level", student["risk"]]
     ]
@@ -161,7 +160,7 @@ def export_student_pdf(student):
     )
 
     summary_data = [
-        ["Attendance", f'{student["attendance"]}%'],
+        ["Attendance", student["attendance"]],
         ["Quiz", student["quiz"]],
         ["Homework", student["homework"]],
         ["Assignment", student["assignment"]],
@@ -170,7 +169,7 @@ def export_student_pdf(student):
         ["Participation", student["participation"]],
         ["Project", student["project"]],
         ["Behavior", student["behavior"]],
-        ["Average", average]
+        ["Average", f"{average}%"]
     ]
 
     summary_table = Table(
@@ -259,34 +258,46 @@ def export_student_pdf(student):
     )
 
     # ==================================
-    # RISK FACTORS
+    # AI RISK ANALYSIS
     # ==================================
     story.append(
         Paragraph(
-            "Risk Factors",
+            "AI Risk Analysis",
             heading_style
         )
     )
 
-    risk_factor_text = ""
+    analysis_text = ""
 
-    if student.get("risk_factors"):
+    if student["risk"] == "High":
 
-        for factor in student["risk_factors"]:
+        analysis_text = (
+            "The student is classified as High Risk based on "
+            "overall academic performance. Multiple assessment "
+            "scores are below the expected level and immediate "
+            "academic intervention is recommended."
+        )
 
-            risk_factor_text += (
-                f"• {factor}<br/>"
-            )
+    elif student["risk"] == "Medium":
+
+        analysis_text = (
+            "The student is classified as Medium Risk. "
+            "Performance is acceptable but several assessment "
+            "areas require improvement to prevent future "
+            "academic decline."
+        )
 
     else:
 
-        risk_factor_text = (
-            "No significant risk factors detected."
+        analysis_text = (
+            "The student is classified as Low Risk. "
+            "Academic performance is stable and consistent "
+            "across most assessment categories."
         )
 
     story.append(
         Paragraph(
-            risk_factor_text,
+            analysis_text,
             body_style
         )
     )
@@ -294,7 +305,6 @@ def export_student_pdf(student):
     story.append(
         Spacer(1, 20)
     )
-
     # ==================================
     # RECOMMENDATION
     # ==================================

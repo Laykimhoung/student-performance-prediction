@@ -26,9 +26,30 @@ class StudentDetailPage(ctk.CTkFrame):
     # ==================================
     def export_pdf(self):
 
-        export_student_pdf(
-            self.student_data
-        )
+        data = self.student_data
+
+        student = {
+            "id": data[1],
+            "name": data[2],
+            "gender": data[3],
+            "class": data[4],
+
+            "quiz": data[5] or 0,
+            "homework": data[6] or 0,
+            "attendance": data[7] or 0,
+            "assignment": data[8] or 0,
+            "midterm": data[9] or 0,
+            "final": data[10] or 0,
+            "participation": data[11] or 0,
+            "project": data[12] or 0,
+            "behavior": data[13] or 0,
+            "average": data[14] or 0,
+
+            "risk": data[15] or "Low",
+            "recommendation": data[16] or "No recommendation available."
+        }
+
+        export_student_pdf(student)
 
     # ==================================
     # UI
@@ -190,30 +211,30 @@ class StudentDetailPage(ctk.CTkFrame):
             padx=25
         )
 
-        attendance_card = ctk.CTkFrame(
-            left_panel,
-            fg_color="#111827",
-            corner_radius=22
-        )
+        average_card = ctk.CTkFrame(
+    left_panel,
+    fg_color="#111827",
+    corner_radius=22
+)
 
-        attendance_card.pack(
+        average_card.pack(
             fill="x",
             padx=25,
             pady=25
         )
 
-        attendance = student["attendance"]
+        average = student["average"]
 
-        if attendance < 60:
-            attendance_color = "#EF4444"
-        elif attendance < 75:
-            attendance_color = "#F59E0B"
+        if average < 60:
+            average_color = "#EF4444"
+        elif average < 75:
+            average_color = "#F59E0B"
         else:
-            attendance_color = "#10B981"
+            average_color = "#10B981"
 
         ctk.CTkLabel(
-            attendance_card,
-            text="Attendance",
+            average_card,
+            text="Average Score",
             font=("Segoe UI", 22, "bold")
         ).pack(
             anchor="w",
@@ -222,27 +243,18 @@ class StudentDetailPage(ctk.CTkFrame):
         )
 
         ctk.CTkLabel(
-            attendance_card,
-            text=f"{attendance}%",
+            average_card,
+            text=f"{average}%",
             font=("Segoe UI", 36, "bold"),
-            text_color=attendance_color
+            text_color=average_color
         ).pack(
             anchor="w",
             padx=20,
             pady=(0, 20)
         )
 
-        ctk.CTkLabel(
-            left_panel,
-            text="Academic Performance",
-            font=("Segoe UI", 28, "bold")
-        ).pack(
-            anchor="w",
-            padx=25,
-            pady=(5, 15)
-        )
-
         academic_data = [
+            ("Attendance", student["attendance"]),
             ("Quiz", student["quiz"]),
             ("Homework", student["homework"]),
             ("Assignment", student["assignment"]),
@@ -250,8 +262,7 @@ class StudentDetailPage(ctk.CTkFrame):
             ("Final", student["final"]),
             ("Participation", student["participation"]),
             ("Project", student["project"]),
-            ("Behavior", student["behavior"]),
-            ("Average", student["average"])
+            ("Behavior", student["behavior"])
         ]
 
         for key, value in academic_data:

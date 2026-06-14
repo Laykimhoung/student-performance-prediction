@@ -1,4 +1,5 @@
 from openpyxl import Workbook
+from tkinter import filedialog
 from openpyxl.styles import (
     Font,
     PatternFill,
@@ -8,7 +9,6 @@ from openpyxl.styles import (
 )
 from openpyxl.utils import get_column_letter
 from datetime import datetime
-from pathlib import Path
 
 
 def calculate_average(student):
@@ -90,7 +90,6 @@ def export_class_excel(class_data, students):
     summary_rows = [
         ("Class", class_data["name"]),
         ("Students", class_data["students"]),
-        ("Attendance", f'{class_data["attendance"]}%'),
         ("Average", f'{class_data["average"]}%'),
         ("High Risk", high_count),
         ("Medium Risk", medium_count),
@@ -294,14 +293,17 @@ def export_class_excel(class_data, students):
     # ==================================
     # SAVE TO DOWNLOADS
     # ==================================
-    downloads_path = Path.home() / "Downloads"
-
-    file_name = (
-        f'{class_data["name"].replace(" ", "_")}'
-        f'_report.xlsx'
+    file_path = filedialog.asksaveasfilename(
+        title="Save Excel Report",
+        defaultextension=".xlsx",
+        initialfile=f'{class_data["name"]}_report.xlsx',
+        filetypes=[
+            ("Excel Files", "*.xlsx")
+        ]
     )
 
-    file_path = downloads_path / file_name
+    if not file_path:
+        return
 
     wb.save(file_path)
 

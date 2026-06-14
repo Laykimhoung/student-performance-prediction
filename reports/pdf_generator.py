@@ -6,16 +6,17 @@ from reportlab.platypus import (
     Paragraph,
     PageBreak
 )
+from tkinter import filedialog
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4, landscape
-from pathlib import Path
 from datetime import datetime
 
 
 def calculate_average(student):
 
     scores = [
+        student["attendance"],
         student["quiz"],
         student["homework"],
         student["assignment"],
@@ -37,15 +38,18 @@ def export_class_pdf(class_data, students):
     # ==================================
     # SAVE LOCATION
     # ==================================
-    downloads_path = Path.home() / "Downloads"
-
-    file_name = (
-        f'{class_data["name"].replace(" ", "_")}'
-        f'_report.pdf'
+    file_path = filedialog.asksaveasfilename(
+        title="Save PDF Report",
+        defaultextension=".pdf",
+        initialfile=f'{class_data["name"]}_report.pdf',
+        filetypes=[
+            ("PDF Files", "*.pdf")
+        ]
     )
 
-    file_path = downloads_path / file_name
-
+    if not file_path:
+        return
+    
     # ==================================
     # PDF DOCUMENT
     # ==================================
@@ -126,7 +130,6 @@ def export_class_pdf(class_data, students):
     info_data = [
         ["Class", class_data["name"]],
         ["Students", class_data["students"]],
-        ["Attendance", f'{class_data["attendance"]}%'],
         ["Average", f'{class_data["average"]}%'],
         ["Generated", datetime.now().strftime("%d/%m/%Y")]
     ]
@@ -178,7 +181,6 @@ def export_class_pdf(class_data, students):
     stats_data = [
         [
             "Students",
-            "Attendance",
             "Average",
             "High Risk",
             "Medium Risk",
@@ -186,7 +188,6 @@ def export_class_pdf(class_data, students):
         ],
         [
             class_data["students"],
-            f'{class_data["attendance"]}%',
             f'{class_data["average"]}%',
             len(high_risk),
             len(medium_risk),
@@ -196,7 +197,7 @@ def export_class_pdf(class_data, students):
 
     stats_table = Table(
         stats_data,
-        colWidths=[90] * 6
+        colWidths=[110] * 5
     )
 
     stats_table.setStyle(TableStyle([

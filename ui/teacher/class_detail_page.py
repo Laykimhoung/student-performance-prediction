@@ -152,8 +152,15 @@ class ClassDetailPage(ctk.CTkFrame):
     # ==================================
     def export_excel(self):
 
+        class_export_data = {
+            "name": self.class_data["name"],
+            "students": self.class_data["students"],
+            "average": self.class_data["average"],
+            "attendance": 0
+        }
+
         export_class_excel(
-            self.class_data,
+            class_export_data,
             self.students
         )
     
