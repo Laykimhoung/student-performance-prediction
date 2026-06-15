@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS predictions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     student_id INTEGER NOT NULL UNIQUE,
-
+    predicted_score REAL DEFAULT 0,
     risk_level TEXT DEFAULT 'Low',
     recommendation TEXT DEFAULT '',
 

@@ -12,8 +12,7 @@ from database.crud import (
 from ui.teacher.analytics_charts import (
     create_risk_donut_chart,
     create_assessment_chart,
-    create_score_histogram,
-    create_high_risk_chart
+    create_score_histogram
 )
 
 
@@ -130,7 +129,7 @@ class AnalyticsPage(ctk.CTkFrame):
         top_bar.pack(
             fill="x",
             padx=35,
-            pady=(25, 10)
+            pady=(25, 5)
         )
 
         title_frame = ctk.CTkFrame(
@@ -144,17 +143,8 @@ class AnalyticsPage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             title_frame,
-            text="Analytics & Risk Prediction",
+            text="Analytics",
             font=("Segoe UI", 40, "bold")
-        ).pack(
-            anchor="w"
-        )
-
-        ctk.CTkLabel(
-            title_frame,
-            text="Analyze student performance and identify intervention needs",
-            font=("Segoe UI", 17),
-            text_color="#94A3B8"
         ).pack(
             anchor="w"
         )
@@ -255,110 +245,30 @@ class AnalyticsPage(ctk.CTkFrame):
 
                     if self.selected_class is None:
 
-                        self.selected_class = classes[0]
+                        default_class = None
 
-                        class_dropdown.set(
-                            classes[0]
-                        )
+                        for cls in classes:
+
+                            if "CS" in cls.upper():
+                                default_class = cls
+                                break
+
+                        if default_class is None:
+                            default_class = classes[0]
+
+                        self.selected_class = default_class
+
+                        class_dropdown.set(default_class)
 
                         self.after(
                             100,
-                            lambda: self.on_class_change(classes[0])
+                            lambda: self.on_class_change(default_class)
                         )
-
-        # ==================================
-        # CALCULATE HEALTH SCORE
-        # ==================================
-        health_score = 0
-
-        if self.total_students > 0:
-
-            health_score = round(
-                (
-                    (self.low_risk * 100) +
-                    (self.medium_risk * 70) +
-                    (self.high_risk * 30)
-                )
-                /
-                self.total_students,
-                1
-            )
-
-        # ==================================
-        # KPI CARDS
-        # ==================================
-        stats_frame = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-
-        stats_frame.pack(
-            fill="x",
-            padx=30,
-            pady=(0, 25)
-        )
-
-        stats = [
-            (
-                str(self.total_students),
-                "Students",
-                "#3B82F6"
-            ),
-            (
-                str(self.high_risk),
-                "High Risk",
-                "#EF4444"
-            ),
-            (
-                str(self.medium_risk),
-                "Medium Risk",
-                "#F59E0B"
-            ),
-            (
-                f"{health_score}%",
-                "Health Score",
-                "#10B981"
-            )
-        ]
-
-        for value, label, color in stats:
-
-            card = ctk.CTkFrame(
-                stats_frame,
-                fg_color="#0F172A",
-                corner_radius=28,
-                height=105
-            )
-
-            card.pack(
-                side="left",
-                fill="both",
-                expand=True,
-                padx=10
-            )
-
-            card.pack_propagate(False)
-
-            ctk.CTkLabel(
-                card,
-                text=value,
-                font=("Segoe UI", 28, "bold"),
-                text_color=color
-            ).pack(
-                pady=(28, 5)
-            )
-
-            ctk.CTkLabel(
-                card,
-                text=label,
-                font=("Segoe UI", 16),
-                text_color="#94A3B8"
-            ).pack()
         
         # ==================================
         # MAIN BODY
         # ==================================
-        body = ctk.CTkScrollableFrame(
+        body = ctk.CTkFrame(
             self,
             fg_color="transparent"
         )
@@ -367,9 +277,25 @@ class AnalyticsPage(ctk.CTkFrame):
             fill="both",
             expand=True,
             padx=30,
-            pady=(0, 25)
+            pady=(0, 20)
         )
 
+        body.grid_columnconfigure(
+            (0, 1),
+            weight=1
+        )
+
+        body.grid_rowconfigure(
+            0,
+            weight=1,
+            minsize=430
+        )
+
+        body.grid_rowconfigure(
+            1,
+            weight=1,
+            minsize=430
+        )
         # ==================================
         # RISK DONUT CHART
         # ==================================
@@ -378,16 +304,17 @@ class AnalyticsPage(ctk.CTkFrame):
             body,
             fg_color="#0F172A",
             corner_radius=28,
-            height=550,
-            width=1200
+            height=460,
         )
+        
+        donut_frame.grid_propagate(False)
 
-        donut_frame.pack_propagate(False)
-
-        donut_frame.pack(
-            fill="both",
-            expand=True,
-            pady=(0, 20)
+        donut_frame.grid(
+            row=0,
+            column=0,
+            sticky="nsew",
+            padx=8,
+            pady=8
         )
 
         create_risk_donut_chart(
@@ -404,16 +331,17 @@ class AnalyticsPage(ctk.CTkFrame):
             body,
             fg_color="#0F172A",
             corner_radius=28,
-            height=550,
-            width=1200
+            height=460,
         )
 
-        assessment_frame.pack_propagate(False)
+        assessment_frame.grid_propagate(False)
 
-        assessment_frame.pack(
-            fill="both",
-            expand=True,
-            pady=(0, 20)
+        assessment_frame.grid(
+            row=0,
+            column=1,
+            sticky="nsew",
+            padx=8,
+            pady=8
         )
 
         assessment_values = []
@@ -437,16 +365,17 @@ class AnalyticsPage(ctk.CTkFrame):
             body,
             fg_color="#0F172A",
             corner_radius=28,
-            height=550,
-            width=1200
+            height=460,
         )
 
-        histogram_frame.pack_propagate(False)
+        histogram_frame.grid_propagate(False)
 
-        histogram_frame.pack(
-            fill="both",
-            expand=True,
-            pady=(0, 20)
+        histogram_frame.grid(
+            row=1,
+            column=0,
+            sticky="nsew",
+            padx=8,
+            pady=8
         )
 
         create_score_histogram(
@@ -455,196 +384,75 @@ class AnalyticsPage(ctk.CTkFrame):
         )
 
         # ==================================
-        # HIGH RISK CHART
+        # HIGH RISK STUDENTS
         # ==================================
+
         risk_students_frame = ctk.CTkFrame(
-            body,
-            fg_color="#0F172A",
-            corner_radius=28,
-            height=550,
-            width=1200
-        )
-
-        risk_students_frame.pack_propagate(False)
-
-        risk_students_frame.pack(
-            fill="both",
-            expand=True,
-            pady=(0, 20)
-        )
-
-        create_high_risk_chart(
-            risk_students_frame,
-            self.high_risk_students
-        )
-
-        # ==================================
-        # AI INSIGHTS SECTION
-        # ==================================
-        insights_frame = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
             corner_radius=28
         )
 
-        insights_frame.pack(
-            fill="x",
-            padx=30,
-            pady=(0, 25)
+        risk_students_frame.grid(
+            row=1,
+            column=1,
+            sticky="nsew",
+            padx=8,
+            pady=8
         )
 
         ctk.CTkLabel(
-            insights_frame,
-            text="AI Insights & Recommendations",
-            font=("Segoe UI", 26, "bold")
+            risk_students_frame,
+            text="High Risk Students",
+            font=("Segoe UI", 20, "bold")
         ).pack(
-            anchor="w",
-            padx=25,
-            pady=(25, 15)
+            pady=(15, 10)
         )
 
-        insights = []
+        student_list = ctk.CTkScrollableFrame(
+            risk_students_frame,
+            fg_color="transparent"
+        )
 
-        # ==========================
-        # RISK INSIGHTS
-        # ==========================
-        if self.high_risk > 0:
+        student_list.pack(
+            fill="both",
+            expand=True,
+            padx=15,
+            pady=(0, 15)
+        )
 
-            insights.append(
-                f"⚠ {self.high_risk} students are currently classified as High Risk."
+        for student in self.high_risk_students:
+
+            name = student[0]
+            average = student[1]
+
+            row = ctk.CTkFrame(
+                student_list,
+                fg_color="#111827",
+                corner_radius=12
             )
 
-        else:
-
-            insights.append(
-                "✓ No High Risk students detected."
-            )
-
-        if self.medium_risk > 0:
-
-            insights.append(
-                f"⚠ {self.medium_risk} students require monitoring."
-            )
-
-        if self.low_risk > 0:
-
-            insights.append(
-                f"✓ {self.low_risk} students are performing well."
-            )
-
-        # ==========================
-        # ASSESSMENT INSIGHTS
-        # ==========================
-        if self.assessment_data:
-
-            labels = [
-                "Attendance",
-                "Quiz",
-                "Homework",
-                "Assignment",
-                "Midterm",
-                "Final",
-                "Participation",
-                "Project",
-                "Behavior"
-            ]
-
-            values = [
-                value if value is not None else 0
-                for value in self.assessment_data
-            ]
-
-            lowest_index = values.index(
-                min(values)
-            )
-
-            highest_index = values.index(
-                max(values)
-            )
-
-            insights.append(
-                f"📉 Lowest performance area: {labels[lowest_index]} ({values[lowest_index]}%)."
-            )
-
-            insights.append(
-                f"📈 Strongest area: {labels[highest_index]} ({values[highest_index]}%)."
-            )
-
-        # ==========================
-        # DISPLAY INSIGHTS
-        # ==========================
-        for text in insights:
-
-            ctk.CTkLabel(
-                insights_frame,
-                text=text,
-                font=("Segoe UI", 15),
-                text_color="#CBD5E1",
-                justify="left"
-            ).pack(
-                anchor="w",
-                padx=25,
+            row.pack(
+                fill="x",
                 pady=5
             )
 
-        # ==================================
-        # RECOMMENDATION CARD
-        # ==================================
-        recommendation_card = ctk.CTkFrame(
-            insights_frame,
-            fg_color="#111827",
-            corner_radius=20
-        )
-
-        recommendation_card.pack(
-            fill="x",
-            padx=25,
-            pady=25
-        )
-
-        ctk.CTkLabel(
-            recommendation_card,
-            text="Recommended Action",
-            font=("Segoe UI", 20, "bold")
-        ).pack(
-            anchor="w",
-            padx=20,
-            pady=(20, 10)
-        )
-
-        recommendation_text = ""
-
-        if self.high_risk > 0:
-
-            recommendation_text = (
-                "Prioritize intervention sessions for High Risk students. "
-                "Review attendance, quiz performance and assignment completion. "
-                "Schedule teacher-parent discussions where necessary."
+            ctk.CTkLabel(
+                row,
+                text=name,
+                font=("Segoe UI", 14, "bold")
+            ).pack(
+                side="left",
+                padx=15,
+                pady=10
             )
 
-        elif self.medium_risk > 0:
-
-            recommendation_text = (
-                "Continue monitoring Medium Risk students and provide additional "
-                "academic support before risk levels increase."
+            ctk.CTkLabel(
+                row,
+                text=f"{average:.1f}",
+                text_color="#EF4444",
+                font=("Segoe UI", 14, "bold")
+            ).pack(
+                side="right",
+                padx=15
             )
-
-        else:
-
-            recommendation_text = (
-                "Current class performance is healthy. Continue reinforcement "
-                "activities and maintain academic engagement."
-            )
-
-        ctk.CTkLabel(
-            recommendation_card,
-            text=recommendation_text,
-            wraplength=900,
-            justify="left",
-            font=("Segoe UI", 15),
-            text_color="#CBD5E1"
-        ).pack(
-            anchor="w",
-            padx=20,
-            pady=(0, 20)
-        )

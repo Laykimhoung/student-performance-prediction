@@ -315,6 +315,7 @@ def get_student_detail(student_id):
         a.behavior,
         a.average,
 
+        p.predicted_score,
         p.risk_level,
         p.recommendation
 
@@ -583,6 +584,7 @@ def update_assessment(
 
 def update_prediction(
     student_id,
+    predicted_score,
     risk,
     recommendation
 ):
@@ -593,10 +595,12 @@ def update_prediction(
     cursor.execute("""
     UPDATE predictions
     SET
+        predicted_score = ?,
         risk_level = ?,
         recommendation = ?
     WHERE student_id = ?
     """, (
+        predicted_score,
         risk,
         recommendation,
         student_id

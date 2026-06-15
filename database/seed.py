@@ -1,3 +1,4 @@
+import random
 from database.db import get_connection
 
 conn = get_connection()
@@ -99,15 +100,15 @@ for index, (student_id,) in enumerate(students):
     # LOW RISK
     if index < 90:
 
-        quiz = 85
-        homework = 88
-        attendance = 92
-        assignment = 86
-        midterm = 84
-        final = 90
-        participation = 91
-        project = 87
-        behavior = 95
+        quiz = random.randint(80, 100)
+        homework = random.randint(80, 100)
+        attendance = random.randint(85, 100)
+        assignment = random.randint(80, 100)
+        midterm = random.randint(75, 100)
+        final = random.randint(80, 100)
+        participation = random.randint(75, 100)
+        project = random.randint(80, 100)
+        behavior = random.randint(85, 100)
 
         average = round(
             (
@@ -124,15 +125,15 @@ for index, (student_id,) in enumerate(students):
     # MEDIUM RISK
     elif index < 130:
 
-        quiz = 72
-        homework = 70
-        attendance = 75
-        assignment = 73
-        midterm = 68
-        final = 74
-        participation = 76
-        project = 71
-        behavior = 80
+        quiz = random.randint(60, 79)
+        homework = random.randint(60, 79)
+        attendance = random.randint(60, 79)
+        assignment = random.randint(60, 79)
+        midterm = random.randint(55, 79)
+        final = random.randint(60, 79)
+        participation = random.randint(60, 85)
+        project = random.randint(60, 79)
+        behavior = random.randint(70, 90)
 
         average = round(
             (
@@ -149,15 +150,15 @@ for index, (student_id,) in enumerate(students):
     # HIGH RISK
     else:
 
-        quiz = 55
-        homework = 58
-        attendance = 60
-        assignment = 52
-        midterm = 50
-        final = 57
-        participation = 61
-        project = 54
-        behavior = 65
+        quiz = random.randint(30, 59)
+        homework = random.randint(30, 59)
+        attendance = random.randint(30, 59)
+        assignment = random.randint(30, 59)
+        midterm = random.randint(25, 59)
+        final = random.randint(30, 59)
+        participation = random.randint(30, 70)
+        project = random.randint(30, 59)
+        behavior = random.randint(50, 80)
 
         average = round(
             (
@@ -205,12 +206,14 @@ for index, (student_id,) in enumerate(students):
     INSERT INTO predictions
     (
         student_id,
+        predicted_score,
         risk_level,
         recommendation
     )
-    VALUES (?, ?, ?)
+    VALUES (?, ?, ?, ?)
     """, (
         student_id,
+        average,
         risk,
         recommendation
     ))

@@ -29,8 +29,15 @@ def create_risk_donut_chart(
     low_count
 ):
 
+    if (
+        high_count == 0
+        and medium_count == 0
+        and low_count == 0
+    ):
+        return
+
     fig, ax = plt.subplots(
-        figsize=(7, 7),
+        figsize=(5.5, 5.5),
         facecolor=BG_COLOR
     )
 
@@ -66,13 +73,15 @@ def create_risk_donut_chart(
     )
 
     for text in texts:
+
         text.set_color("white")
+        text.set_fontsize(11)
         text.set_fontweight("bold")
 
     ax.set_title(
         "Risk Distribution",
         color="white",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold"
     )
 
@@ -102,6 +111,9 @@ def create_assessment_chart(
     averages
 ):
 
+    if not averages:
+        return
+
     labels = [
         "Attendance",
         "Quiz",
@@ -115,22 +127,32 @@ def create_assessment_chart(
     ]
 
     fig, ax = plt.subplots(
-        figsize=(12, 6),
+        figsize=(6, 4),
         facecolor=BG_COLOR
     )
 
     ax.set_facecolor(BG_COLOR)
 
-    bars = ax.barh(
+    ax.bar(
         labels,
-        averages
+        averages,
+        color="#3B82F6"
     )
 
-    for bar in bars:
-        bar.set_color("#3B82F6")
+    plt.setp(
+        ax.get_xticklabels(),
+        rotation=25,
+        ha="right"
+    )
 
-    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 100)
 
+    ax.grid(
+        axis="y",
+        alpha=0.25,
+        linestyle="--"
+    )
+    
     ax.tick_params(
         colors="white"
     )
@@ -138,7 +160,7 @@ def create_assessment_chart(
     ax.set_title(
         "Assessment Performance",
         color="white",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold"
     )
 
@@ -163,7 +185,7 @@ def create_assessment_chart(
 
 
 # ==================================
-# SCORE DISTRIBUTION
+# SCORE TREND
 # ==================================
 
 def create_score_histogram(
@@ -171,96 +193,48 @@ def create_score_histogram(
     scores
 ):
 
+    if not scores:
+        return
+
+    scores = sorted(scores)
+
     fig, ax = plt.subplots(
-        figsize=(12, 6),
+        figsize=(6, 4),
         facecolor=BG_COLOR
     )
 
     ax.set_facecolor(BG_COLOR)
 
-    ax.hist(
+    ax.plot(
+        range(len(scores)),
         scores,
-        bins=[0, 50, 60, 70, 80, 90, 100]
+        marker="o",
+        linewidth=3,
+        color="#10B981"
+    )
+
+    ax.fill_between(
+        range(len(scores)),
+        scores,
+        alpha=0.25,
+        color="#10B981"
+    )
+
+    ax.set_ylim(0, 100)
+
+    ax.grid(
+        alpha=0.25,
+        linestyle="--"
+    )
+    
+    ax.tick_params(
+        colors="white"
     )
 
     ax.set_title(
         "Score Distribution",
         color="white",
-        fontsize=14,
-        fontweight="bold"
-    )
-
-    ax.tick_params(
-        colors="white"
-    )
-
-    for spine in ax.spines.values():
-        spine.set_visible(False)
-
-    fig.tight_layout()
-
-    canvas = FigureCanvasTkAgg(
-        fig,
-        master=parent
-    )
-
-    canvas.draw()
-
-    canvas.get_tk_widget().pack(
-        fill="both",
-        expand=True
-    )
-
-    return canvas
-
-
-# ==================================
-# HIGH RISK STUDENTS CHART
-# ==================================
-
-def create_high_risk_chart(
-    parent,
-    students
-):
-
-    if not students:
-        return
-
-    names = [
-        row[0]
-        for row in students
-    ]
-
-    averages = [
-        row[1]
-        for row in students
-    ]
-
-    fig, ax = plt.subplots(
-        figsize=(12, 6),
-        facecolor=BG_COLOR
-    )
-
-    ax.set_facecolor(BG_COLOR)
-
-    bars = ax.barh(
-        names,
-        averages
-    )
-
-    for bar in bars:
-        bar.set_color(HIGH_COLOR)
-
-    ax.tick_params(
-        colors="white"
-    )
-
-    ax.set_xlim(0, 100)
-
-    ax.set_title(
-        "High Risk Students",
-        color="white",
-        fontsize=14,
+        fontsize=16,
         fontweight="bold"
     )
 
