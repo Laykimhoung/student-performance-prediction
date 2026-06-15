@@ -146,6 +146,32 @@ python app.py
 ```
 
 ---
+## 💼 Setup Database
+
+Follow these steps to run **eduvision.db** locally.
+
+---
+### Step 1 — Delete the file eduvision.db fist
+just delete that file, then we will create new for your local computer in next step.
+
+---
+
+### Step 2 — Run schema.py​
+
+Create a local database table:
+
+```bash
+python -m database.schema
+```
+
+---
+### Step 3 — Run seed.py
+Create a fake data in database to view:
+
+```bash
+python -m database.seed
+```
+---
 
 ## ✨ Core Features
 
