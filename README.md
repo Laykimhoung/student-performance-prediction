@@ -110,7 +110,7 @@ source .venv/bin/activate
 After activation, your terminal should look similar to:
 
 ```txt
-(.venv) C:\EduVision-AI>
+(.venv) C:\student-performance-prediction>
 ```
 
 ---
