@@ -1,4 +1,6 @@
 import customtkinter as ctk
+from ai.predictor import predict_student
+from ai.recommender import generate_recommendation
 from database.crud import (
     get_student_dropdown_by_class,
     get_student_id_by_dropdown,
@@ -55,6 +57,7 @@ class GradeEntryPage(ctk.CTkFrame):
             scores = [
                 float(self.quiz.get() or 0),
                 float(self.homework.get() or 0),
+                float(self.attendance.get() or 0),
                 float(self.assignment.get() or 0),
                 float(self.midterm.get() or 0),
                 float(self.final_exam.get() or 0),
@@ -133,29 +136,35 @@ class GradeEntryPage(ctk.CTkFrame):
                 1
             )
 
-            if average >= 80:
+            prediction = predict_student(
+                attendance=attendance,
+                quiz=quiz,
+                homework=homework,
+                assignment=assignment,
+                midterm=midterm,
+                final=final,
+                participation=participation,
+                project=project,
+                behavior=behavior
+            )
 
-                risk = "Low"
+            predicted_score = prediction["predicted_score"]
 
-                recommendation = (
-                    "Maintain current performance."
-                )
+            risk = prediction["risk_level"]
 
-            elif average >= 65:
-
-                risk = "Medium"
-
-                recommendation = (
-                    "Needs additional monitoring."
-                )
-
-            else:
-
-                risk = "High"
-
-                recommendation = (
-                    "Immediate intervention recommended."
-                )
+            recommendation = generate_recommendation(
+                attendance=attendance,
+                quiz=quiz,
+                homework=homework,
+                assignment=assignment,
+                midterm=midterm,
+                final=final,
+                participation=participation,
+                project=project,
+                behavior=behavior,
+                predicted_score=predicted_score,
+                risk_level=risk
+            )
 
             update_assessment(
                 student_id,
@@ -173,6 +182,7 @@ class GradeEntryPage(ctk.CTkFrame):
 
             update_prediction(
                 student_id,
+                predicted_score,
                 risk,
                 recommendation
             )

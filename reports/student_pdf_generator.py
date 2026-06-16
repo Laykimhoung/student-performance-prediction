@@ -12,25 +12,6 @@ from datetime import datetime
 from tkinter import filedialog
 
 
-def calculate_average(student):
-
-    scores = [
-        student["quiz"],
-        student["homework"],
-        student["assignment"],
-        student["midterm"],
-        student["final"],
-        student["participation"],
-        student["project"],
-        student["behavior"]
-    ]
-
-    return round(
-        sum(scores) / len(scores),
-        1
-    )
-
-
 def export_student_pdf(student):
 
     # ==================================
@@ -66,7 +47,7 @@ def export_student_pdf(student):
 
     story = []
 
-    average = calculate_average(student)
+    average = student["average"]
 
     # ==================================
     # HEADER
@@ -112,6 +93,7 @@ def export_student_pdf(student):
         ["ID", student["id"]],
         ["Class", student["class"]],
         ["Average Score", f"{average}%"],
+        ["Predicted Score", f'{student["predicted_score"]:.1f}%'],
         ["Risk Level", student["risk"]]
     ]
 
@@ -226,6 +208,7 @@ def export_student_pdf(student):
 
     risk_table = Table(
         [
+            ["Predicted Score", f'{student["predicted_score"]:.1f}%'],
             ["Risk Level", student["risk"]]
         ],
         colWidths=[200, 200]
@@ -233,22 +216,22 @@ def export_student_pdf(student):
 
     risk_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, 0),
-         colors.HexColor("#1E3A8A")),
+        colors.HexColor("#1E3A8A")),
 
         ("TEXTCOLOR", (0, 0), (0, 0),
-         colors.white),
+        colors.white),
 
         ("BACKGROUND", (1, 0), (1, 0),
-         colors.HexColor(risk_color)),
+        colors.HexColor(risk_color)),
 
         ("FONTNAME", (0, 0), (-1, -1),
-         "Helvetica-Bold"),
+        "Helvetica-Bold"),
 
         ("GRID", (0, 0), (-1, -1),
-         1, colors.black),
+        1, colors.black),
 
         ("ALIGN", (0, 0), (-1, -1),
-         "CENTER")
+        "CENTER")
     ]))
 
     story.append(risk_table)
@@ -267,65 +250,12 @@ def export_student_pdf(student):
         )
     )
 
-    analysis_text = ""
-
-    if student["risk"] == "High":
-
-        analysis_text = (
-            "The student is classified as High Risk based on "
-            "overall academic performance. Multiple assessment "
-            "scores are below the expected level and immediate "
-            "academic intervention is recommended."
-        )
-
-    elif student["risk"] == "Medium":
-
-        analysis_text = (
-            "The student is classified as Medium Risk. "
-            "Performance is acceptable but several assessment "
-            "areas require improvement to prevent future "
-            "academic decline."
-        )
-
-    else:
-
-        analysis_text = (
-            "The student is classified as Low Risk. "
-            "Academic performance is stable and consistent "
-            "across most assessment categories."
-        )
-
     story.append(
         Paragraph(
-            analysis_text,
-            body_style
-        )
-    )
-
-    story.append(
-        Spacer(1, 20)
-    )
-    # ==================================
-    # RECOMMENDATION
-    # ==================================
-    story.append(
-        Paragraph(
-            "Personalized Recommendation",
-            heading_style
-        )
-    )
-
-    recommendation = student.get(
-        "recommendation",
-        "Maintain current academic performance."
-    )
-
-    story.append(
-        Paragraph(
-            recommendation.replace(
-                "\n",
-                "<br/>"
-            ),
+            student.get(
+                "recommendation",
+                "No AI analysis available."
+            ).replace("\n", "<br/>"),
             body_style
         )
     )
@@ -344,25 +274,25 @@ def export_student_pdf(student):
         )
     )
 
-    if average >= 80:
+    if student["risk"] == "Low":
 
         performance_text = (
-            "The student demonstrates strong academic "
-            "performance and consistent classroom engagement."
+            "The student demonstrates strong academic performance "
+            "and is currently classified as low risk by the AI model."
         )
 
-    elif average >= 65:
+    elif student["risk"] == "Medium":
 
         performance_text = (
-            "The student shows acceptable performance "
-            "but should continue improving academic consistency."
+            "The student demonstrates moderate academic risk and "
+            "should continue improving weaker assessment areas."
         )
 
     else:
 
         performance_text = (
-            "The student requires additional academic "
-            "support and closer monitoring."
+            "The student is classified as high risk and would benefit "
+            "from additional academic support and intervention."
         )
 
     story.append(

@@ -55,21 +55,41 @@ VALUES (?, ?)
 # STUDENTS
 # ==================================
 
-names = [
-    "Dara", "Sokha", "Kimlong", "Visal", "Nita",
-    "Chantha", "Sreypich", "Rith", "Kosal", "Panha",
-    "Bopha", "Pisey", "Vannak", "Sokunthea", "Malis",
-    "Socheat", "Ratanak", "Sophea", "Kanha", "Mony",
-    "Ravy", "Thida", "Sokly", "Dalin", "Narin"
+first_names = [
+    "Lim", "Chan", "Kim", "Chea", "Seng",
+    "Seng", "Ly", "Horn", "Naing", "Keo",
+    "Heng", "In", "Eiv", "Pich", "Hong",
+    "Mom", "Vuth", "Chhay", "Hak", "Dara",
+    "Chhoung", "Sim", "Lay", "Mao", "Prak"   
+]
+
+last_names = [
+    "Brathna", "Sophana", "Kimhoung", "Visal", "Sonita",
+    "ChanNarith", "Sreypich", "Roth", "ChanDana", "Panha",
+    "Anna", "Pisey", "Vannat", "Sokuntheary", "Nary",
+    "Socheat", "Ratanak", "Phanith", "Kanha", "RithyVireak",
+    "Sereyboth", "Thida", "Niza", "Youe", "Sovannara"
 ]
 
 student_id = 1
+used_names = set()
 
 for class_id in range(1, 7):
 
-    for i in range(25):
+    for i in range(100):
 
-        name = names[i]
+        while True:
+
+            name = (
+                f"{random.choice(first_names)} "
+                f"{random.choice(last_names)}"
+            )
+
+            if name not in used_names:
+
+                used_names.add(name)
+
+                break
 
         code = f"AU{student_id:03d}"
 
@@ -81,7 +101,7 @@ for class_id in range(1, 7):
         VALUES (?, ?, ?, ?)
         """, (
             code,
-            f"{name} {class_id}",
+            name,
             gender,
             class_id
         ))
@@ -95,81 +115,72 @@ for class_id in range(1, 7):
 cursor.execute("SELECT id FROM students")
 students = cursor.fetchall()
 
-for index, (student_id,) in enumerate(students):
+for student_id, in students:
 
-    # LOW RISK
-    if index < 90:
+    risk = random.choices(
+        ["Low", "Medium", "High"],
+        weights=[60, 25, 15],
+        k=1
+    )[0]
+
+    if risk == "Low":
 
         quiz = random.randint(80, 100)
-        homework = random.randint(80, 100)
+        homework = random.randint(75, 100)
         attendance = random.randint(85, 100)
-        assignment = random.randint(80, 100)
+        assignment = random.randint(75, 100)
         midterm = random.randint(75, 100)
         final = random.randint(80, 100)
-        participation = random.randint(75, 100)
-        project = random.randint(80, 100)
+        participation = random.randint(70, 100)
+        project = random.randint(75, 100)
         behavior = random.randint(85, 100)
 
-        average = round(
-            (
-                quiz + homework + attendance +
-                assignment + midterm + final +
-                participation + project + behavior
-            ) / 9,
-            1
-        )
+    elif risk == "Medium":
 
-        risk = "Low"
-        recommendation = "Maintain current performance."
+        quiz = random.randint(60, 85)
+        homework = random.randint(60, 85)
+        attendance = random.randint(60, 85)
+        assignment = random.randint(60, 85)
+        midterm = random.randint(55, 85)
+        final = random.randint(60, 85)
+        participation = random.randint(55, 90)
+        project = random.randint(60, 85)
+        behavior = random.randint(70, 95)
 
-    # MEDIUM RISK
-    elif index < 130:
-
-        quiz = random.randint(60, 79)
-        homework = random.randint(60, 79)
-        attendance = random.randint(60, 79)
-        assignment = random.randint(60, 79)
-        midterm = random.randint(55, 79)
-        final = random.randint(60, 79)
-        participation = random.randint(60, 85)
-        project = random.randint(60, 79)
-        behavior = random.randint(70, 90)
-
-        average = round(
-            (
-                quiz + homework + attendance +
-                assignment + midterm + final +
-                participation + project + behavior
-            ) / 9,
-            1
-        )
-
-        risk = "Medium"
-        recommendation = "Needs additional monitoring."
-
-    # HIGH RISK
     else:
 
-        quiz = random.randint(30, 59)
-        homework = random.randint(30, 59)
-        attendance = random.randint(30, 59)
-        assignment = random.randint(30, 59)
-        midterm = random.randint(25, 59)
-        final = random.randint(30, 59)
-        participation = random.randint(30, 70)
-        project = random.randint(30, 59)
-        behavior = random.randint(50, 80)
+        quiz = random.randint(30, 70)
+        homework = random.randint(30, 70)
+        attendance = random.randint(30, 70)
+        assignment = random.randint(30, 70)
+        midterm = random.randint(25, 70)
+        final = random.randint(30, 70)
+        participation = random.randint(30, 80)
+        project = random.randint(30, 70)
+        behavior = random.randint(50, 90)
 
-        average = round(
-            (
-                quiz + homework + attendance +
-                assignment + midterm + final +
-                participation + project + behavior
-            ) / 9,
-            1
-        )
+    average = round(
+        (
+            quiz +
+            homework +
+            attendance +
+            assignment +
+            midterm +
+            final +
+            participation +
+            project +
+            behavior
+        ) / 9,
+        1
+    )
 
-        risk = "High"
+    if risk == "Low":
+        recommendation = "Maintain current performance."
+
+    elif risk == "Medium":
+        recommendation = "Needs additional monitoring."
+
+    else:
         recommendation = "Immediate intervention recommended."
 
     cursor.execute("""

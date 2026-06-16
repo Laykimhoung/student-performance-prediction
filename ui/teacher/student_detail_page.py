@@ -45,8 +45,10 @@ class StudentDetailPage(ctk.CTkFrame):
             "behavior": data[13] or 0,
             "average": data[14] or 0,
 
-            "risk": data[15] or "Low",
-            "recommendation": data[16] or "No recommendation available."
+            "predicted_score": data[15] or 0,
+            "risk": data[16] or "Low",
+
+            "recommendation": data[17] or "No recommendation available."
         }
 
         export_student_pdf(student)
@@ -75,8 +77,10 @@ class StudentDetailPage(ctk.CTkFrame):
             "behavior": data[13] or 0,
             "average": data[14] or 0,
 
-            "risk": data[15] or "Low",
-            "recommendation": data[16] or "No recommendation available."
+            "predicted_score": data[15] or 0,
+            "risk": data[16] or "Low",
+
+            "recommendation": data[17] or "No recommendation available."
         }
 
         scroll_page = ctk.CTkScrollableFrame(
@@ -172,8 +176,8 @@ class StudentDetailPage(ctk.CTkFrame):
             pady=(0, 35)
         )
 
-        body.grid_columnconfigure(0, weight=2)
-        body.grid_columnconfigure(1, weight=1)
+        body.grid_columnconfigure(0, weight=1)
+        body.grid_columnconfigure(1, weight=2)
 
         # ==================================
         # LEFT PANEL
@@ -331,6 +335,39 @@ class StudentDetailPage(ctk.CTkFrame):
             pady=(25, 20)
         )
 
+        prediction_card = ctk.CTkFrame(
+            right_panel,
+            fg_color="#111827",
+            corner_radius=22
+        )
+
+        prediction_card.pack(
+            fill="x",
+            padx=25,
+            pady=(0, 20)
+        )
+
+        ctk.CTkLabel(
+            prediction_card,
+            text="Predicted Score",
+            font=("Segoe UI", 20, "bold")
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(20, 5)
+        )
+
+        ctk.CTkLabel(
+            prediction_card,
+            text=f"{student['predicted_score']:.1f}%",
+            font=("Segoe UI", 32, "bold"),
+            text_color="#2563EB"
+        ).pack(
+            anchor="w",
+            padx=20,
+            pady=(0, 20)
+        )
+
         risk = student["risk"]
 
         if risk == "High":
@@ -362,7 +399,7 @@ class StudentDetailPage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             right_panel,
-            text="Assessment-Based Analysis",
+            text="AI Academic Analysis",
             font=("Segoe UI", 24, "bold")
         ).pack(
             anchor="w",
@@ -372,7 +409,7 @@ class StudentDetailPage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             right_panel,
-            text="Generated from student assessment scores.",
+            text="Generated using AI-based performance prediction and assessment analysis.",
             font=("Segoe UI", 16),
             text_color="#CBD5E1"
         ).pack(
@@ -387,7 +424,8 @@ class StudentDetailPage(ctk.CTkFrame):
         )
 
         recommendation_card.pack(
-            fill="x",
+            fill="both",
+            expand=True,
             padx=25,
             pady=(30, 30)
         )
@@ -402,14 +440,24 @@ class StudentDetailPage(ctk.CTkFrame):
             pady=(20, 10)
         )
 
-        ctk.CTkLabel(
+        recommendation_box = ctk.CTkTextbox(
             recommendation_card,
-            text=student["recommendation"],
-            justify="left",
-            font=("Segoe UI", 15),
-            text_color="#CBD5E1"
-        ).pack(
-            anchor="w",
+            height=350,
+            font=("Segoe UI", 15)
+        )
+
+        recommendation_box.pack(
+            fill="both",
+            expand=True,
             padx=20,
             pady=(0, 20)
+        )
+
+        recommendation_box.insert(
+            "1.0",
+            student["recommendation"]
+        )
+
+        recommendation_box.configure(
+            state="disabled"
         )
