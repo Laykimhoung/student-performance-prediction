@@ -862,3 +862,210 @@ def get_score_distribution(class_name=None):
     conn.close()
 
     return data
+
+# ==================================
+# FOR ADMIN
+# ==================================
+def get_all_classes():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        c.id,
+        c.class_name,
+        t.full_name
+
+    FROM classes c
+
+    LEFT JOIN teachers t
+        ON c.teacher_id = t.id
+
+    ORDER BY c.id
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_all_teachers():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        username,
+        full_name
+    FROM teachers
+    ORDER BY id
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def search_teachers(keyword):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            username,
+            full_name
+        FROM teachers
+        WHERE full_name LIKE ?
+        OR username LIKE ?
+        ORDER BY id
+    """, (f"%{keyword}%", f"%{keyword}%"))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def search_classes(keyword):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            c.id,
+            c.class_name,
+            t.full_name
+        FROM classes c
+        LEFT JOIN teachers t
+            ON c.teacher_id = t.id
+        WHERE c.class_name LIKE ?
+        ORDER BY c.id
+    """, (f"%{keyword}%",))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def add_teacher(username, password, full_name):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO teachers(
+            username,
+            password,
+            full_name
+        )
+        VALUES (?, ?, ?)
+    """, (
+        username,
+        password,
+        full_name
+    ))
+
+    conn.commit()
+    conn.close()
+
+def add_class(class_name, teacher_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO classes(
+            class_name,
+            teacher_id
+        )
+        VALUES (?, ?)
+    """, (
+        class_name,
+        teacher_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def update_teacher(
+    teacher_id,
+    username,
+    full_name
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE teachers
+        SET
+            username = ?,
+            full_name = ?
+        WHERE id = ?
+    """, (
+        username,
+        full_name,
+        teacher_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def update_class(
+    class_id,
+    class_name,
+    teacher_id
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE classes
+        SET
+            class_name = ?,
+            teacher_id = ?
+        WHERE id = ?
+    """, (
+        class_name,
+        teacher_id,
+        class_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def delete_teacher(teacher_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM teachers
+        WHERE id = ?
+    """, (teacher_id,))
+
+    conn.commit()
+    conn.close()
+
+def delete_class(class_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM classes
+        WHERE id = ?
+    """, (class_id,))
+
+    conn.commit()
+    conn.close()
