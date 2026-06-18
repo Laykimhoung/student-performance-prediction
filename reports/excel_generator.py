@@ -10,31 +10,11 @@ from openpyxl.styles import (
 from openpyxl.utils import get_column_letter
 from datetime import datetime
 
-
-def calculate_average(student):
-
-    scores = [
-        student["quiz"],
-        student["homework"],
-        student["assignment"],
-        student["midterm"],
-        student["final"],
-        student["participation"],
-        student["project"],
-        student["behavior"]
-    ]
-
-    return round(
-        sum(scores) / len(scores),
-        1
-    )
-
-
 def export_class_excel(class_data, students):
 
     wb = Workbook()
     ws = wb.active
-    ws.title = "Student Performance"
+    ws.title = "Student Performance" 
 
     # ==================================
     # STYLES
@@ -112,6 +92,31 @@ def export_class_excel(class_data, students):
             column=2
         )
 
+        if label == "Average":
+
+            avg = class_data["average"]
+
+            if avg >= 80:
+
+                value_cell.fill = PatternFill(
+                    fill_type="solid",
+                    fgColor=low_risk
+                )
+
+            elif avg >= 65:
+
+                value_cell.fill = PatternFill(
+                    fill_type="solid",
+                    fgColor=medium_risk
+                )
+
+            else:
+
+                value_cell.fill = PatternFill(
+                    fill_type="solid",
+                    fgColor=high_risk
+                )
+
         label_cell.value = label
         value_cell.value = value
 
@@ -139,6 +144,7 @@ def export_class_excel(class_data, students):
         "Project",
         "Behavior",
         "Average",
+        "Predicted",
         "Risk"
     ]
 
@@ -172,9 +178,7 @@ def export_class_excel(class_data, students):
 
     for student in students:
 
-        average = calculate_average(
-            student
-        )
+        average = student["average"]
 
         data = [
             student["id"],
@@ -189,6 +193,7 @@ def export_class_excel(class_data, students):
             student["project"],
             student["behavior"],
             average,
+            round(student["predicted_score"], 2),
             student["risk"]
         ]
 
@@ -229,9 +234,31 @@ def export_class_excel(class_data, students):
                         fill_type="solid",
                         fgColor=high_risk
                     )
-
-            # Risk Color
+            # Predicted Score Color
             elif col == 13:
+
+                if value >= 80:
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=low_risk
+                    )
+
+                elif value >= 65:
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=medium_risk
+                    )
+
+                else:
+
+                    cell.fill = PatternFill(
+                        fill_type="solid",
+                        fgColor=high_risk
+                    )
+            # Risk Color
+            elif col == 14:
 
                 if value == "Low":
 

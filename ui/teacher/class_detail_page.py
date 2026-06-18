@@ -67,8 +67,9 @@ class ClassDetailPage(ctk.CTkFrame):
                     "behavior": detail[13] or 0,
 
                     "average": detail[14] or 0,
-                    "risk": detail[15] or "Low",
-                    "recommendation": detail[16] or ""
+                    "predicted_score": detail[15] or 0,
+                    "risk": detail[16] or "Low",
+                    "recommendation": detail[17] or ""
                 }
             )
         return students
@@ -367,7 +368,7 @@ class ClassDetailPage(ctk.CTkFrame):
             ("Behavior", 80),
             ("Avg", 60),
             ("Risk", 80),
-            ("Action", 90)
+            ("Act", 70)
         ]
 
         for col, width in columns:
@@ -489,8 +490,8 @@ class ClassDetailPage(ctk.CTkFrame):
 
         ctk.CTkLabel(
             actions_frame,
-            text="Quick Actions",
-            font=("Segoe UI", 28, "bold")
+            text="Quick Act",
+            font=("Segoe UI", 24, "bold")
         ).pack(
             anchor="w",
             padx=28,

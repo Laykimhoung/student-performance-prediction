@@ -197,15 +197,15 @@ class TeacherDashboard(DashboardShell):
         )
 
         # ===============================
-        # RECENT ALERTS
+        # ABOUT EDUVISION AI
         # ===============================
-        alerts_frame = ctk.CTkFrame(
+        about_frame = ctk.CTkFrame(
             body,
             fg_color="#0F172A",
             corner_radius=28
         )
 
-        alerts_frame.grid(
+        about_frame.grid(
             row=0,
             column=0,
             sticky="nsew",
@@ -213,40 +213,64 @@ class TeacherDashboard(DashboardShell):
         )
 
         ctk.CTkLabel(
-            alerts_frame,
-            text="Recent Alerts",
-            font=("Segoe UI", 26, "bold")
+            about_frame,
+            text="Welcome to EduVision AI",
+            font=("Segoe UI", 28, "bold")
         ).pack(
             anchor="w",
             padx=25,
-            pady=(25, 20)
+            pady=(25, 15)
         )
 
-        alerts = []
+        description = """
+        This Teacher Panel is designed to help educators
+        monitor academic performance, manage classroom
+        activities, and identify students who may require
+        additional academic support.
+        """
 
-        for student, class_name in recent_risks:
+        ctk.CTkLabel(
+            about_frame,
+            text=description,
+            justify="left",
+            font=("Segoe UI", 16),
+            text_color="#CBD5E1"
+        ).pack(
+            anchor="w",
+            padx=25,
+            pady=(0, 20)
+        )
 
-            alerts.append(
-                f"⚠ {student} marked High Risk ({class_name})"
-            )
+        ctk.CTkLabel(
+            about_frame,
+            text="Use the navigation menu to:",
+            font=("Segoe UI", 18, "bold"),
+            text_color="white"
+        ).pack(
+            anchor="w",
+            padx=25,
+            pady=(0, 15)
+        )
 
-        if not alerts:
+        features = [
+            "Manage classrooms and student records",
+            "Review assessment results and performance",
+            "Monitor student risk levels and AI predictions",
+            "Analyze academic trends and class statistics",
+            "Export reports in PDF and Excel formats"
+        ]
 
-            alerts.append(
-                "✓ No High Risk Students"
-            )
-
-        for item in alerts:
+        for item in features:
 
             ctk.CTkLabel(
-                alerts_frame,
-                text=item,
-                font=("Segoe UI", 17),
+                about_frame,
+                text=f"• {item}",
+                font=("Segoe UI", 16),
                 text_color="#CBD5E1"
             ).pack(
                 anchor="w",
-                padx=25,
-                pady=8
+                padx=40,
+                pady=4
             )
 
         # ===============================

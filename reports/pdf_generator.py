@@ -246,14 +246,13 @@ def export_class_pdf(class_data, students):
         "Project",
         "Behavior",
         "Average",
+        "Pred",
         "Risk"
     ]]
 
     for student in students:
 
-        average = calculate_average(
-            student
-        )
+        average = student["average"]
 
         table_data.append([
             student["id"],
@@ -268,6 +267,7 @@ def export_class_pdf(class_data, students):
             student["project"],
             student["behavior"],
             average,
+            round(student["predicted_score"],2),
             student["risk"]
         ])
 
@@ -286,31 +286,32 @@ def export_class_pdf(class_data, students):
             45,
             50,
             50,
-            45
+            50,
+            50
         ]
     )
 
     style = [
         ("BACKGROUND", (0, 0), (-1, 0),
-         colors.HexColor("#1E3A8A")),
+        colors.HexColor("#1E3A8A")),
 
         ("TEXTCOLOR", (0, 0), (-1, 0),
-         colors.white),
+        colors.white),
 
         ("FONTNAME", (0, 0), (-1, 0),
-         "Helvetica-Bold"),
+        "Helvetica-Bold"),
 
         ("FONTSIZE", (0, 0), (-1, -1),
-         8),
+        8),
 
         ("GRID", (0, 0), (-1, -1),
-         1, colors.black),
+        1, colors.black),
 
         ("ALIGN", (0, 0), (-1, -1),
-         "CENTER"),
+        "CENTER"),
 
         ("VALIGN", (0, 0), (-1, -1),
-         "MIDDLE")
+        "MIDDLE")
     ]
 
     for row_index, student in enumerate(
@@ -335,6 +336,60 @@ def export_class_pdf(class_data, students):
             risk_color = colors.HexColor(
                 "#FEE2E2"
             )
+
+        average = student["average"]
+
+        if average >= 80:
+
+            avg_color = colors.HexColor(
+                "#DCFCE7"
+            )
+
+        elif average >= 65:
+
+            avg_color = colors.HexColor(
+                "#FEF3C7"
+            )
+
+        else:
+
+            avg_color = colors.HexColor(
+                "#FEE2E2"
+            )
+
+        style.append((
+            "BACKGROUND",
+            (11, row_index),
+            (11, row_index),
+            avg_color
+        ))
+
+        predicted = student["predicted_score"]
+
+        if predicted >= 80:
+
+            pred_color = colors.HexColor(
+                "#DCFCE7"
+            )
+
+        elif predicted >= 65:
+
+            pred_color = colors.HexColor(
+                "#FEF3C7"
+            )
+
+        else:
+
+            pred_color = colors.HexColor(
+                "#FEE2E2"
+            )
+
+        style.append((
+            "BACKGROUND",
+            (12, row_index),
+            (12, row_index),
+            pred_color
+        ))
 
         style.append((
             "BACKGROUND",
@@ -405,7 +460,42 @@ def export_class_pdf(class_data, students):
     story.append(
         Spacer(1, 20)
     )
+    
+    story.append(
+        Paragraph(
+            "Top At-Risk Students",
+            heading_style
+        )
+    )
 
+    sorted_students = sorted(
+        students,
+        key=lambda s: s["predicted_score"]
+    )
+
+    risk_text = ""
+
+    for i, student in enumerate(
+        sorted_students[:10],
+        start=1
+    ):
+
+        risk_text += (
+            f"{i}. "
+            f"{student['name']} "
+            f"({student['predicted_score']:.1f}%)<br/>"
+        )
+
+    story.append(
+        Paragraph(
+            risk_text,
+            body_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 20)
+    )
     # ==================================
     # AI RECOMMENDATION
     # ==================================
@@ -416,20 +506,108 @@ def export_class_pdf(class_data, students):
         )
     )
 
-    recommendations = [
-        "Monitor attendance below 65%.",
-        "Provide tutoring support for weak students.",
-        "Schedule intervention for High Risk students.",
-        "Review quiz performance trends monthly.",
-        "Continue mentoring Low Risk students."
-    ]
+    recommendations = []
+
+    # ==================================
+    # ATTENDANCE ANALYSIS
+    # ==================================
+
+    low_attendance = len([
+        s for s in students
+        if s["attendance"] < 65
+    ])
+
+    if low_attendance > 0:
+
+        recommendations.append(
+            f"{low_attendance} students have attendance below 65%. "
+            f"Improving attendance consistency may positively impact overall academic performance."
+        )
+
+    # ==================================
+    # QUIZ ANALYSIS
+    # ==================================
+
+    weak_quiz = len([
+        s for s in students
+        if s["quiz"] < 65
+    ])
+
+    if weak_quiz > 0:
+
+        recommendations.append(
+            f"{weak_quiz} students are currently struggling with quiz performance. "
+            f"Additional practice exercises and formative assessments are recommended."
+        )
+
+    # ==================================
+    # HOMEWORK ANALYSIS
+    # ==================================
+
+    weak_homework = len([
+        s for s in students
+        if s["homework"] < 65
+    ])
+
+    if weak_homework > 0:
+
+        recommendations.append(
+            f"{weak_homework} students demonstrate weak homework performance. "
+            f"Regular assignment completion should be encouraged."
+        )
+
+    # ==================================
+    # HIGH RISK ANALYSIS
+    # ==================================
+
+    if len(high_risk) > 0:
+
+        recommendations.append(
+            f"{len(high_risk)} students are classified as High Risk and may require targeted academic intervention."
+        )
+
+    # ==================================
+    # MEDIUM RISK ANALYSIS
+    # ==================================
+
+    if len(medium_risk) > 0:
+
+        recommendations.append(
+            f"{len(medium_risk)} students are classified as Medium Risk and should be monitored closely."
+        )
+
+    # ==================================
+    # CLASS AVERAGE ANALYSIS
+    # ==================================
+
+    if class_data["average"] >= 80:
+
+        recommendations.append(
+            "Overall class performance is strong. Continue maintaining current teaching and support strategies."
+        )
+
+    elif class_data["average"] >= 65:
+
+        recommendations.append(
+            "Overall class performance is satisfactory, but improvement opportunities remain in weaker assessment areas."
+        )
+
+    else:
+
+        recommendations.append(
+            "Overall class performance is below the desired level and additional academic support is recommended."
+        )
+
+    # ==================================
+    # BUILD RECOMMENDATION TEXT
+    # ==================================
 
     recommendation_text = ""
 
     for item in recommendations:
 
         recommendation_text += (
-            f"• {item}<br/>"
+            f"• {item}<br/><br/>"
         )
 
     story.append(

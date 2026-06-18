@@ -142,17 +142,24 @@ def get_recent_high_risk_students():
     cursor.execute("""
     SELECT
         s.student_name,
-        c.class_name
+        c.class_name,
+        a.average,
+        p.predicted_score
 
     FROM students s
 
     JOIN classes c
         ON s.class_id = c.id
 
+    JOIN assessments a
+        ON s.id = a.student_id
+
     JOIN predictions p
         ON s.id = p.student_id
 
     WHERE p.risk_level = 'High'
+
+    ORDER BY p.predicted_score ASC
 
     LIMIT 5
     """)

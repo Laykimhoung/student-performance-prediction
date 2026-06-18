@@ -114,9 +114,9 @@ class StudentsPage(ctk.CTkFrame):
 
         risk_color = (
             "#EF4444"
-            if detail[15] == "High"
+            if detail[16] == "High"
             else "#F59E0B"
-            if detail[15] == "Medium"
+            if detail[16] == "Medium"
             else "#10B981"
         )
 
@@ -137,7 +137,7 @@ class StudentsPage(ctk.CTkFrame):
         )
 
         self.preview_risk.configure(
-            text=f"Risk: {detail[15]}",
+            text=f"Risk: {detail[16]}",
             text_color=risk_color
         )
 
