@@ -2,21 +2,56 @@ import customtkinter as ctk
 
 from database.crud import (
     add_class,
-    get_all_teachers
+    get_all_teachers,
+    update_class
 )
 
 
 class AddClassDialog(ctk.CTkToplevel):
 
-    def __init__(self, parent, refresh_callback):
+    def __init__(
+            self,
+            parent,
+            refresh_callback,
+            class_data=None
+        ):
 
         super().__init__(parent)
 
+        self.transient(parent)
+        self.grab_set()
+        self.focus_force()
+
         self.refresh_callback = refresh_callback
 
-        self.title("Add Class")
+        self.class_data = class_data
 
-        self.geometry("450x350")
+        self.title(
+            "Edit Class"
+            if self.class_data
+            else "Add Class"
+        )
+
+        # Center Dialog
+        self.update_idletasks()
+
+        x = parent.winfo_rootx() + (
+            parent.winfo_width() // 2
+        ) - 225
+
+        y = parent.winfo_rooty() + (
+            parent.winfo_height() // 2
+        ) - 175
+
+        self.geometry(f"450x350+{x}+{y}")
+
+        self.lift()
+        self.attributes("-topmost", True)
+
+        self.after(
+            100,
+            lambda: self.attributes("-topmost", False)
+        )
 
         self.resizable(False, False)
 
@@ -28,7 +63,7 @@ class AddClassDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             self,
-            text="Add Class",
+            text="Edit Class" if self.class_data else "Add Class",
             font=("Segoe UI", 24, "bold")
         ).pack(
             pady=(20, 15)
@@ -59,6 +94,24 @@ class AddClassDialog(ctk.CTkToplevel):
             pady=10
         )
 
+        if self.class_data:
+
+            self.class_entry.insert(
+                0,
+                self.class_data[1]
+            )
+
+            teacher_id = self.class_data[2]
+
+            for teacher in self.teachers:
+
+                if teacher[0] == teacher_id:
+
+                    self.teacher_dropdown.set(
+                        teacher[1]
+                    )
+
+                    break
         ctk.CTkButton(
             self,
             text="Save Class",
@@ -85,10 +138,20 @@ class AddClassDialog(ctk.CTkToplevel):
                 teacher_id = teacher[0]
                 break
 
-        add_class(
-            class_name,
-            teacher_id
-        )
+        if self.class_data:
+
+            update_class(
+                self.class_data[0],
+                class_name,
+                teacher_id
+            )
+
+        else:
+
+            add_class(
+                class_name,
+                teacher_id
+            )
 
         self.refresh_callback()
 

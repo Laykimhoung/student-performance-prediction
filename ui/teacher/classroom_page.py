@@ -2,6 +2,8 @@ import customtkinter as ctk
 
 from ui.teacher.class_detail_page import ClassDetailPage
 from database.crud import get_class_cards
+from tkinter import messagebox
+from database import session
 
 
 class ClassroomPage(ctk.CTkFrame):
@@ -31,7 +33,8 @@ class ClassroomPage(ctk.CTkFrame):
                     "name": row[1],
                     "students": row[2],
                     "average": row[3] or 0,
-                    "risk": row[4] or 0
+                    "risk": row[4] or 0,
+                    "teacher_id": row[5]
                 }
             )
 
@@ -41,6 +44,15 @@ class ClassroomPage(ctk.CTkFrame):
     # OPEN CLASS
     # ==================================
     def open_class(self, class_data):
+
+        if class_data["teacher_id"] != session.CURRENT_TEACHER_ID:
+
+            messagebox.showwarning(
+                "Access Denied",
+                "You are not assigned to this class."
+            )
+
+            return
 
         parent = self.master
 

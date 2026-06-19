@@ -412,20 +412,22 @@ def get_class_cards():
 
     cursor.execute("""
     SELECT
-        c.id,
-        c.class_name,
+    c.id,
+    c.class_name,
 
-        COUNT(DISTINCT s.id) AS students,
+    COUNT(DISTINCT s.id) AS students,
 
-        ROUND(AVG(a.average), 1) AS average,
+    ROUND(AVG(a.average), 1) AS average,
 
-        SUM(
-            CASE
-                WHEN p.risk_level = 'High'
-                THEN 1
-                ELSE 0
-            END
-        ) AS high_risk
+    SUM(
+        CASE
+            WHEN p.risk_level = 'High'
+            THEN 1
+            ELSE 0
+        END
+    ) AS high_risk,
+
+    c.teacher_id
 
     FROM classes c
 
@@ -440,7 +442,7 @@ def get_class_cards():
 
     GROUP BY c.id
 
-    ORDER BY c.class_name
+    ORDER BY c.id
     """)
 
     data = cursor.fetchall()
@@ -1069,3 +1071,43 @@ def delete_class(class_id):
 
     conn.commit()
     conn.close()
+
+def get_teacher_by_id(teacher_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            username,
+            full_name
+        FROM teachers
+        WHERE id = ?
+    """, (teacher_id,))
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_class_by_id(class_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            class_name,
+            teacher_id
+        FROM classes
+        WHERE id = ?
+    """, (class_id,))
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data

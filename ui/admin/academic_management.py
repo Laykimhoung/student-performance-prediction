@@ -1,7 +1,13 @@
 import customtkinter as ctk
+from tkinter import messagebox
+
 from database.crud import get_all_classes
 from database.crud import get_all_teachers
 from database.crud import get_total_teachers
+from database.crud import get_teacher_by_id
+from database.crud import delete_teacher
+from database.crud import get_class_by_id
+from database.crud import delete_class
 
 from ui.admin.add_teacher_dialog import AddTeacherDialog
 from ui.admin.add_class_dialog import AddClassDialog
@@ -24,6 +30,128 @@ class AcademicManagementPage(ctk.CTkFrame):
 
         self.build_ui()
 
+    def edit_teacher(self, teacher_id):
+
+        teacher = get_teacher_by_id(
+            teacher_id
+        )
+
+        AddTeacherDialog(
+            self,
+            self.refresh_page,
+            teacher
+        )
+
+    def remove_teacher(self, teacher_id):
+
+        confirm = messagebox.askyesno(
+            "Delete Teacher",
+            "Are you sure you want to delete this teacher?"
+        )
+
+        if not confirm:
+            return
+
+        delete_teacher(teacher_id)
+
+        self.refresh_page()
+
+    def search_teachers(self, event=None):
+
+        keyword = self.teacher_search.get().lower()
+
+        for widget in self.teacher_table.winfo_children():
+            widget.destroy()
+
+        headers = [
+            "ID",
+            "Teacher",
+            "Username",
+            "Actions"
+        ]
+
+        for col, header in enumerate(headers):
+
+            ctk.CTkLabel(
+                self.teacher_table,
+                text=header,
+                font=("Segoe UI", 14, "bold")
+            ).grid(
+                row=0,
+                column=col,
+                padx=15,
+                pady=(0, 15),
+                sticky="w"
+            )
+        
+        row_num = 1
+
+        for teacher in self.teachers:
+
+            teacher_id = str(teacher[0])
+
+            if (
+                keyword in teacher_id.lower()
+                or
+                keyword in teacher[1].lower()
+                or
+                keyword in teacher[2].lower()
+            ):
+
+                values = [
+                    teacher[0],
+                    teacher[2],
+                    teacher[1]
+                ]
+
+                for col_index, value in enumerate(values):
+
+                    ctk.CTkLabel(
+                        self.teacher_table,
+                        text=str(value),
+                        font=("Segoe UI", 13)
+                    ).grid(
+                        row=row_num,
+                        column=col_index,
+                        padx=15,
+                        pady=8,
+                        sticky="w"
+                    )
+
+                action_frame = ctk.CTkFrame(
+                    self.teacher_table,
+                    fg_color="transparent"
+                )
+
+                action_frame.grid(
+                    row=row_num,
+                    column=3,
+                    padx=10,
+                    sticky="w"
+                )
+
+                ctk.CTkButton(
+                    action_frame,
+                    text="Edit",
+                    width=60,
+                    height=28,
+                    fg_color="#F59E0B",
+                    command=lambda t=teacher:
+                        self.edit_teacher(t[0])
+                ).pack(side="left", padx=3)
+
+                ctk.CTkButton(
+                    action_frame,
+                    text="Delete",
+                    width=60,
+                    height=28,
+                    fg_color="#DC2626",
+                    command=lambda t=teacher:
+                        self.remove_teacher(t[0])
+                ).pack(side="left", padx=3)
+
+                row_num += 1
+
     def open_add_class(self):
 
         AddClassDialog(
@@ -31,6 +159,136 @@ class AcademicManagementPage(ctk.CTkFrame):
             self.refresh_page
         )
 
+    def edit_class(self, class_id):
+
+        class_data = get_class_by_id(
+            class_id
+        )
+
+        AddClassDialog(
+            self,
+            self.refresh_page,
+            class_data
+        )
+
+    def remove_class(self, class_id):
+
+        confirm = messagebox.askyesno(
+            "Delete Class",
+            "Are you sure you want to delete this class?"
+        )
+
+        if not confirm:
+            return
+
+        delete_class(class_id)
+
+        self.refresh_page()
+
+    def search_classes(self, event=None):
+
+        keyword = self.class_search.get().lower()
+
+        for widget in self.class_table.winfo_children():
+            widget.destroy()
+
+        headers = [
+            "ID",
+            "Class",
+            "Teacher",
+            "Actions"
+        ]
+
+        for col, header in enumerate(headers):
+
+            ctk.CTkLabel(
+                self.class_table,
+                text=header,
+                font=("Segoe UI", 14, "bold")
+            ).grid(
+                row=0,
+                column=col,
+                padx=15,
+                pady=(0, 15),
+                sticky="w"
+            )
+
+        row_num = 1
+
+        for row in self.classes:
+
+            class_name = str(row[1]).lower()
+
+            teacher_name = (
+                str(row[2]).lower()
+                if row[2]
+                else ""
+            )
+
+            class_id = str(row[0])
+
+            if (
+                keyword in class_id.lower()
+                or
+                keyword in class_name
+                or
+                keyword in teacher_name
+            ):
+
+                values = [
+                    row[0],
+                    row[1],
+                    row[2] if row[2] else "Not Assigned"
+                ]
+
+                for col_index, value in enumerate(values):
+
+                    ctk.CTkLabel(
+                        self.class_table,
+                        text=str(value),
+                        font=("Segoe UI", 13)
+                    ).grid(
+                        row=row_num,
+                        column=col_index,
+                        padx=15,
+                        pady=8,
+                        sticky="w"
+                    )
+
+                action_frame = ctk.CTkFrame(
+                    self.class_table,
+                    fg_color="transparent"
+                )
+
+                action_frame.grid(
+                    row=row_num,
+                    column=3,
+                    padx=10,
+                    sticky="w"
+                )
+
+                ctk.CTkButton(
+                    action_frame,
+                    text="Edit",
+                    width=60,
+                    height=28,
+                    fg_color="#F59E0B",
+                    command=lambda c=row:
+                        self.edit_class(c[0])
+                ).pack(side="left", padx=3)
+
+                ctk.CTkButton(
+                    action_frame,
+                    text="Delete",
+                    width=60,
+                    height=28,
+                    fg_color="#DC2626",
+                    command=lambda c=row:
+                        self.remove_class(c[0])
+                ).pack(side="left", padx=3)
+
+                row_num += 1
+        
     def __init__(self, parent):
 
         super().__init__(
@@ -38,6 +296,7 @@ class AcademicManagementPage(ctk.CTkFrame):
             fg_color="transparent"
         )
 
+        self.teachers = get_all_teachers()
         self.classes = get_all_classes()
 
         self.build_ui()
@@ -182,16 +441,21 @@ class AcademicManagementPage(ctk.CTkFrame):
             pady=(0, 15)
         )
 
-        teacher_search = ctk.CTkEntry(
+        self.teacher_search = ctk.CTkEntry(
             teacher_toolbar,
             placeholder_text="Search teacher..."
         )
 
-        teacher_search.pack(
+        self.teacher_search.pack(
             side="left",
             fill="x",
             expand=True,
             padx=(0, 10)
+        )
+
+        self.teacher_search.bind(
+            "<KeyRelease>",
+            self.search_teachers
         )
 
         teacher_add_btn = ctk.CTkButton(
@@ -205,22 +469,22 @@ class AcademicManagementPage(ctk.CTkFrame):
             side="right"
         )
 
-        teacher_table = ctk.CTkScrollableFrame(
+        self.teacher_table = ctk.CTkScrollableFrame(
             teacher_frame,
             fg_color="transparent"
         )
 
-        teacher_table.pack(
+        self.teacher_table.pack(
             fill="both",
             expand=True,
             padx=20,
             pady=(10, 20)
         )
 
-        teacher_table.grid_columnconfigure(0, minsize=50)
-        teacher_table.grid_columnconfigure(1, minsize=180)
-        teacher_table.grid_columnconfigure(2, minsize=140)
-        teacher_table.grid_columnconfigure(3, minsize=180)
+        self.teacher_table.grid_columnconfigure(0, minsize=50)
+        self.teacher_table.grid_columnconfigure(1, minsize=180)
+        self.teacher_table.grid_columnconfigure(2, minsize=140)
+        self.teacher_table.grid_columnconfigure(3, minsize=180)
 
         headers = [
             "ID",
@@ -232,7 +496,7 @@ class AcademicManagementPage(ctk.CTkFrame):
         for col, header in enumerate(headers):
 
             ctk.CTkLabel(
-                teacher_table,
+                self.teacher_table,
                 text=header,
                 font=("Segoe UI", 14, "bold")
             ).grid(
@@ -250,7 +514,7 @@ class AcademicManagementPage(ctk.CTkFrame):
             row_color = "#111827" if row_index % 2 == 0 else "#0B1324"
 
             row_frame = ctk.CTkFrame(
-                teacher_table,
+                self.teacher_table,
                 fg_color=row_color,
                 corner_radius=10,
                 height=45
@@ -307,7 +571,9 @@ class AcademicManagementPage(ctk.CTkFrame):
                 text="Edit",
                 width=60,
                 height=28,
-                fg_color="#F59E0B"
+                fg_color="#F59E0B",
+                command=lambda t=teacher:
+                    self.edit_teacher(t[0])
             ).pack(side="left", padx=3)
 
             ctk.CTkButton(
@@ -315,7 +581,9 @@ class AcademicManagementPage(ctk.CTkFrame):
                 text="Delete",
                 width=60,
                 height=28,
-                fg_color="#DC2626"
+                fg_color="#DC2626",
+                command=lambda t=teacher:
+                    self.remove_teacher(t[0])
             ).pack(side="left", padx=3)
 
         # ==========================
@@ -355,18 +623,23 @@ class AcademicManagementPage(ctk.CTkFrame):
             pady=(0, 15)
         )
 
-        class_search = ctk.CTkEntry(
+        self.class_search = ctk.CTkEntry(
             class_toolbar,
             placeholder_text="Search class..."
         )
 
-        class_search.pack(
+        self.class_search.pack(
             side="left",
             fill="x",
             expand=True,
             padx=(0, 10)
         )
 
+        self.class_search.bind(
+            "<KeyRelease>",
+            self.search_classes
+        )
+        
         class_add_btn = ctk.CTkButton(
             class_toolbar,
             text="+ Add Class",
@@ -378,22 +651,22 @@ class AcademicManagementPage(ctk.CTkFrame):
             side="right"
         )
 
-        class_table = ctk.CTkScrollableFrame(
+        self.class_table = ctk.CTkScrollableFrame(
             class_frame,
             fg_color="transparent"
         )
 
-        class_table.pack(
+        self.class_table.pack(
             fill="both",
             expand=True,
             padx=20,
             pady=(10, 20)
         )
 
-        class_table.grid_columnconfigure(0, minsize=50)
-        class_table.grid_columnconfigure(1, minsize=140)
-        class_table.grid_columnconfigure(2, minsize=180)
-        class_table.grid_columnconfigure(3, minsize=180)
+        self.class_table.grid_columnconfigure(0, minsize=50)
+        self.class_table.grid_columnconfigure(1, minsize=140)
+        self.class_table.grid_columnconfigure(2, minsize=180)
+        self.class_table.grid_columnconfigure(3, minsize=180)
 
         headers = [
             "ID",
@@ -405,7 +678,7 @@ class AcademicManagementPage(ctk.CTkFrame):
         for col, header in enumerate(headers):
 
             ctk.CTkLabel(
-                class_table,
+                self.class_table,
                 text=header,
                 font=("Segoe UI", 14, "bold")
             ).grid(
@@ -423,7 +696,7 @@ class AcademicManagementPage(ctk.CTkFrame):
             teacher_name = row[2] if row[2] else "Not Assigned"
 
             row_frame = ctk.CTkFrame(
-                class_table,
+                self.class_table,
                 fg_color=row_color,
                 corner_radius=10,
                 height=45
@@ -480,7 +753,9 @@ class AcademicManagementPage(ctk.CTkFrame):
                 text="Edit",
                 width=60,
                 height=28,
-                fg_color="#F59E0B"
+                fg_color="#F59E0B",
+                command=lambda c=row:
+                    self.edit_class(c[0])
             ).pack(side="left", padx=3)
 
             ctk.CTkButton(
@@ -488,5 +763,7 @@ class AcademicManagementPage(ctk.CTkFrame):
                 text="Delete",
                 width=60,
                 height=28,
-                fg_color="#DC2626"
+                fg_color="#DC2626",
+                command=lambda c=row:
+                    self.remove_class(c[0])
             ).pack(side="left", padx=3)

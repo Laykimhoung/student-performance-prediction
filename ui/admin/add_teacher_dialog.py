@@ -1,19 +1,54 @@
 import customtkinter as ctk
 
 from database.crud import add_teacher
+from database.crud import update_teacher
 
 
 class AddTeacherDialog(ctk.CTkToplevel):
 
-    def __init__(self, parent, refresh_callback):
+    def __init__(
+            self,
+            parent,
+            refresh_callback,
+            teacher=None
+        ):
 
         super().__init__(parent)
 
+        # Keep dialog in front
+        self.transient(parent)
+        self.grab_set()
+        self.focus_force()
+
         self.refresh_callback = refresh_callback
+        self.teacher = teacher
 
-        self.title("Add Teacher")
+        if self.teacher:
+            self.title("Edit Teacher")
+        else:
+            self.title("Add Teacher")
 
-        self.geometry("450x350")
+        # Center dialog
+        self.update_idletasks()
+
+        x = parent.winfo_rootx() + (
+            parent.winfo_width() // 2
+        ) - 225
+
+        y = parent.winfo_rooty() + (
+            parent.winfo_height() // 2
+        ) - 175
+
+        self.geometry(f"450x350+{x}+{y}")
+
+        # Bring to front
+        self.lift()
+        self.attributes("-topmost", True)
+
+        self.after(
+            100,
+            lambda: self.attributes("-topmost", False)
+        )
 
         self.resizable(False, False)
 
@@ -23,7 +58,7 @@ class AddTeacherDialog(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             self,
-            text="Add Teacher",
+            text="Edit Teacher" if self.teacher else "Add Teacher",
             font=("Segoe UI", 24, "bold")
         ).pack(
             pady=(20, 15)
@@ -49,6 +84,9 @@ class AddTeacherDialog(ctk.CTkToplevel):
             pady=10
         )
 
+        if self.teacher:
+            self.password_entry.pack_forget()
+
         self.fullname_entry = ctk.CTkEntry(
             self,
             width=300,
@@ -58,6 +96,18 @@ class AddTeacherDialog(ctk.CTkToplevel):
         self.fullname_entry.pack(
             pady=10
         )
+
+        if self.teacher:
+
+            self.username_entry.insert(
+                0,
+                self.teacher[1]
+            )
+
+            self.fullname_entry.insert(
+                0,
+                self.teacher[2]
+            )
 
         ctk.CTkButton(
             self,
@@ -76,14 +126,27 @@ class AddTeacherDialog(ctk.CTkToplevel):
 
         fullname = self.fullname_entry.get().strip()
 
-        if not username or not password or not fullname:
+        if not username or not fullname:
             return
 
-        add_teacher(
-            username,
-            password,
-            fullname
-        )
+        if self.teacher:
+
+            update_teacher(
+                self.teacher[0],
+                username,
+                fullname
+            )
+
+        else:
+
+            if not password:
+                return
+
+            add_teacher(
+                username,
+                password,
+                fullname
+            )
 
         self.refresh_callback()
 

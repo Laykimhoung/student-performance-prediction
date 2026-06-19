@@ -1,5 +1,6 @@
 from ui.components.login_template import LoginTemplate
 from database.crud import validate_teacher
+from database import session
 
 
 class TeacherLoginPage(LoginTemplate):
@@ -29,6 +30,12 @@ class TeacherLoginPage(LoginTemplate):
         )
 
         if teacher:
+
+            session.CURRENT_TEACHER_ID = teacher[0]
+            session.CURRENT_TEACHER_NAME = teacher[2]
+
             self.master.master.show_teacher_dashboard()
+
         else:
+
             print("Wrong teacher credentials")
