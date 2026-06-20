@@ -1,5 +1,10 @@
 import customtkinter as ctk
 
+from database.crud import (
+    get_total_students,
+    get_total_teachers,
+    get_total_classes
+)
 
 class DashboardPage(ctk.CTkFrame):
 
@@ -24,7 +29,7 @@ class DashboardPage(ctk.CTkFrame):
         hero.pack(
             fill="x",
             padx=45,
-            pady=(40, 25)
+            pady=(30, 20)
         )
 
         title = ctk.CTkLabel(
@@ -36,11 +41,21 @@ class DashboardPage(ctk.CTkFrame):
 
         subtitle = ctk.CTkLabel(
             hero,
-            text="AI-powered academic monitoring and intervention system",
+            text="AI-Enhanced Student Performance Prediction and Management System",
             font=("Segoe UI", 18),
             text_color="#94A3B8"
         )
         subtitle.pack(anchor="w", pady=(8, 0))
+
+        ctk.CTkLabel(
+            hero,
+            text="Monitor • Predict • Improve",
+            font=("Segoe UI", 18, "bold"),
+            text_color="#3B82F6"
+        ).pack(
+            anchor="w",
+            pady=(10, 0)
+        )
 
         # ==================================
         # STATS PREVIEW
@@ -62,10 +77,10 @@ class DashboardPage(ctk.CTkFrame):
         )
 
         stats = [
-            ("1,540+", "Students", "#3B82F6"),
-            ("38+", "Teachers", "#EF4444"),
-            ("16", "Classes", "#8B5CF6"),
-            ("92%", "Success Rate", "#10B981")
+            (str(get_total_students()), "Students", "#3B82F6"),
+            (str(get_total_teachers()), "Teachers", "#EF4444"),
+            (str(get_total_classes()), "Classes", "#8B5CF6"),
+            ("AI Ready", "Prediction System", "#10B981")
         ]
 
         for i, (number, label, color) in enumerate(stats):
@@ -135,31 +150,32 @@ class DashboardPage(ctk.CTkFrame):
         )
 
         features_frame.pack(
-            fill="both",
-            expand=True,
+            fill="x",
             padx=45,
             pady=(0, 35)
         )
 
-        features_frame.grid_columnconfigure(
-            (0, 1, 2),
-            weight=1
-        )
+        for col in range(3):
+
+            features_frame.grid_columnconfigure(
+                col,
+                weight=1
+            )
 
         features = [
             (
-                "AI Prediction",
-                "Predict academic risks and performance trends.",
+                "Student Management",
+                "Manage students, classrooms and academic records.",
                 "#3B82F6"
             ),
             (
-                "Performance Monitoring",
-                "Track attendance, grades and interventions.",
+                "Teacher Management",
+                "Assign teachers and organize classrooms efficiently.",
                 "#EF4444"
             ),
             (
-                "Smart Analytics",
-                "Generate reports and insights automatically.",
+                "AI Prediction",
+                "Detect at-risk students and recommend interventions.",
                 "#10B981"
             )
         ]
@@ -171,14 +187,17 @@ class DashboardPage(ctk.CTkFrame):
                 fg_color="#0F172A",
                 corner_radius=28,
                 border_width=1,
-                border_color="#1E293B"
+                border_color="#1E293B",
+                height=240
             )
+
+            card.grid_propagate(False)
 
             card.grid(
                 row=0,
                 column=i,
-                padx=12,
-                sticky="nsew"
+                padx=8,
+                sticky="ew"
             )
 
             top_line = ctk.CTkFrame(
@@ -215,3 +234,18 @@ class DashboardPage(ctk.CTkFrame):
                 padx=24,
                 pady=(12, 30)
             )
+        footer = ctk.CTkLabel(
+            self,
+            text=(
+                "EduVision AI v1.0\n"
+                "Artificial Intelligence in Student Management Systems\n"
+                "to Enhance Academic Performance Monitoring and Intervention"
+            ),
+            justify="center",
+            font=("Segoe UI", 13),
+            text_color="#64748B"
+        )
+
+        footer.pack(
+            pady=(20, 15)
+        )

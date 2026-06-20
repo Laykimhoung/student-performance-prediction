@@ -161,25 +161,25 @@ def export_student_pdf(student):
 
     summary_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (0, -1),
-         colors.HexColor("#1E3A8A")),
+        colors.HexColor("#1E3A8A")),
 
         ("TEXTCOLOR", (0, 0), (0, -1),
-         colors.white),
+        colors.white),
 
         ("BACKGROUND", (1, 0), (1, -1),
-         colors.HexColor("#F8FAFC")),
+        colors.HexColor("#F8FAFC")),
 
         ("FONTNAME", (0, 0), (-1, -1),
-         "Helvetica-Bold"),
+        "Helvetica-Bold"),
 
         ("GRID", (0, 0), (-1, -1),
-         1, colors.black),
+        1, colors.black),
 
         ("ALIGN", (0, 0), (-1, -1),
-         "CENTER"),
+        "CENTER"),
 
         ("VALIGN", (0, 0), (-1, -1),
-         "MIDDLE")
+        "MIDDLE")
     ]))
 
     story.append(summary_table)
