@@ -1,5 +1,6 @@
 from ui.components.dashboard_shell import DashboardShell
 from ui.admin.academic_management import AcademicManagementPage
+from ui.admin.student_management import StudentManagementPage
 import customtkinter as ctk
 from database.crud import (
     get_total_students,
@@ -23,8 +24,6 @@ class AdminDashboard(DashboardShell):
                 "Dashboard",
                 "Academic Management",
                 "Student Management",
-                "Reports",
-                "Analytics"
             ]
         )
 
@@ -47,6 +46,14 @@ class AdminDashboard(DashboardShell):
         elif page_name == "Academic Management":
 
             page = AcademicManagementPage(self.content)
+
+            page.pack(
+                fill="both",
+                expand=True
+            )
+        elif page_name == "Student Management":
+
+            page = StudentManagementPage(self.content)
 
             page.pack(
                 fill="both",
@@ -88,7 +95,7 @@ class AdminDashboard(DashboardShell):
 
         subtitle = ctk.CTkLabel(
             self.content,
-            text="Manage teachers, students, classes and system reports",
+            text="Manage teachers, students, classes and academic records",
             font=("Segoe UI", 18),
             text_color="#94A3B8"
         )
@@ -202,8 +209,8 @@ class AdminDashboard(DashboardShell):
         description = (
             "This Admin Panel provides complete control over\n"
             "the EduVision AI platform. Administrators can\n"
-            "manage teachers, students, classes, reports,\n"
-            "and monitor system-wide academic performance."
+            "manage teachers, students, classes and\n"
+            "support academic management."
         )
 
         ctk.CTkLabel(
@@ -232,9 +239,8 @@ class AdminDashboard(DashboardShell):
             "Manage teachers and user accounts",
             "Manage students and classes",
             "Assign teachers to classrooms",
-            "Generate PDF and Excel reports",
             "Monitor academic risk levels",
-            "View system-wide analytics"
+            "Support academic management"
         ]
 
         for item in features:

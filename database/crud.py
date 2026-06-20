@@ -866,7 +866,7 @@ def get_score_distribution(class_name=None):
     return data
 
 # ==================================
-# FOR ADMIN
+# ADMIN - TEACHER-ClASS
 # ==================================
 def get_all_classes():
 
@@ -1064,10 +1064,15 @@ def delete_class(class_id):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        DELETE FROM classes
-        WHERE id = ?
-    """, (class_id,))
+    cursor.execute(
+        "DELETE FROM students WHERE class_id=?",
+        (class_id,)
+    )
+
+    cursor.execute(
+        "DELETE FROM classes WHERE id=?",
+        (class_id,)
+    )
 
     conn.commit()
     conn.close()
@@ -1111,3 +1116,261 @@ def get_class_by_id(class_id):
     conn.close()
 
     return data
+
+# ==================================
+# ADMIN - STUDENT
+# ==================================
+def get_all_students_admin():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        s.id,
+        s.student_code,
+        s.student_name,
+        s.gender,
+        c.class_name
+
+    FROM students s
+
+    LEFT JOIN classes c
+        ON s.class_id = c.id
+
+    ORDER BY s.id
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def search_students(keyword):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        s.id,
+        s.student_code,
+        s.student_name,
+        s.gender,
+        c.class_name
+
+    FROM students s
+
+    LEFT JOIN classes c
+        ON s.class_id = c.id
+
+    WHERE
+        s.student_code LIKE ?
+        OR s.student_name LIKE ?
+
+    ORDER BY s.id
+    """, (
+        f"%{keyword}%",
+        f"%{keyword}%"
+    ))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def add_student(
+    student_code,
+    student_name,
+    gender,
+    class_id
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO students(
+        student_code,
+        student_name,
+        gender,
+        class_id
+    )
+    VALUES (?, ?, ?, ?)
+    """, (
+        student_code,
+        student_name,
+        gender,
+        class_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def update_student(
+    student_id,
+    student_code,
+    student_name,
+    gender,
+    class_id
+):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    UPDATE students
+    SET
+        student_code = ?,
+        student_name = ?,
+        gender = ?,
+        class_id = ?
+    WHERE id = ?
+    """, (
+        student_code,
+        student_name,
+        gender,
+        class_id,
+        student_id
+    ))
+
+    conn.commit()
+    conn.close()
+
+def delete_student(student_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    DELETE FROM students
+    WHERE id = ?
+    """, (student_id,))
+
+    conn.commit()
+    conn.close()
+
+def get_student_by_id(student_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        student_code,
+        student_name,
+        gender,
+        class_id
+    FROM students
+    WHERE id = ?
+    """, (student_id,))
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def get_student_class_cards():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        c.id,
+        c.class_name,
+        COUNT(s.id)
+
+    FROM classes c
+
+    LEFT JOIN students s
+        ON c.id = s.class_id
+
+    GROUP BY c.id
+
+    ORDER BY c.id
+    """)
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_students_by_class(class_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT
+        id,
+        student_code,
+        student_name,
+        gender,
+        class_id
+    FROM students
+    WHERE class_id = ?
+    ORDER BY id
+    """, (class_id,))
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return data
+
+def get_class_teacher(class_id):
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT t.full_name, t.username
+    FROM classes c
+    JOIN teachers t
+        ON c.teacher_id = t.id
+    WHERE c.id = ?
+    """, (class_id,))
+
+    data = cursor.fetchone()
+
+    conn.close()
+
+    return data
+
+def generate_student_code():
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT MAX(id)
+        FROM students
+    """)
+
+    last_id = cursor.fetchone()[0] or 0
+
+    return f"AU{last_id + 1:03d}"
+
+def delete_student(student_id):
+
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        DELETE FROM students
+        WHERE id = ?
+        """,
+        (student_id,)
+    )
+
+    conn.commit()
+
+    conn.close()

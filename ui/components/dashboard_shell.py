@@ -12,6 +12,9 @@ class DashboardShell(ctk.CTkFrame):
     ):
         super().__init__(parent, fg_color="#071224")
 
+        self.menu_buttons = {}
+        self.active_button = None
+
         self.parent = parent
         self.role_name = role_name
         self.accent_color = accent_color
@@ -35,6 +38,26 @@ class DashboardShell(ctk.CTkFrame):
         self.destroy()
 
         self.parent.show_role_selection()
+
+    # ==================================
+    # MENU SELECTION
+    # ==================================
+    def select_menu(self, page_name):
+
+        # Reset all buttons
+        for btn in self.menu_buttons.values():
+            btn.configure(
+                fg_color="#172033"
+            )
+
+        # Highlight selected button
+        self.menu_buttons[page_name].configure(
+            fg_color=self.accent_color
+        )
+
+        self.active_button = page_name
+
+        self.navigate(page_name)
 
     # ==================================
     # UI
@@ -104,7 +127,7 @@ class DashboardShell(ctk.CTkFrame):
                 hover_color=self.accent_color,
                 font=("Segoe UI", 17),
                 anchor="w",
-                command=lambda x=item: self.navigate(x)
+                command=lambda x=item: self.select_menu(x)
             )
 
             btn.pack(
@@ -112,6 +135,8 @@ class DashboardShell(ctk.CTkFrame):
                 padx=22,
                 pady=7
             )
+
+            self.menu_buttons[item] = btn
 
         # Logout
         logout_btn = ctk.CTkButton(
@@ -147,3 +172,9 @@ class DashboardShell(ctk.CTkFrame):
             padx=(20, 35),
             pady=20
         )
+
+        if self.menu_items:
+            self.after(
+                100,
+                lambda: self.select_menu(self.menu_items[0])
+            )
