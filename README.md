@@ -129,7 +129,7 @@ EduVision AI uses Machine Learning techniques to evaluate student performance ba
 ---
 
 # 🚀 Installation & Setup
-
+⚠️ **Before starting, make sure you have Python 3.11.X installed. Most of the libraries and dependencies used in this project were developed and tested with Python 3.11, and using other versions may cause installation or compatibility issues.**
 
 ## 1. Clone Repository
 
