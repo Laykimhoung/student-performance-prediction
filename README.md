@@ -14,11 +14,11 @@ An intelligent desktop application designed to monitor academic performance, pre
 ## 📑 Table of Contents
 
 * [📌 Project Overview](#-project-overview)
-* [🚀 Installation & Setup](#-installation--setup)
-* [🔄 Rebuild Database & AI Model](#-rebuild-database--ai-model)
 * [✨ Core Features](#-core-features)
 * [🤖 AI Features](#-ai-features)
 * [🛠️ Technologies Used](#️-technologies-used)
+* [🚀 Installation & Setup](#-installation--setup)
+* [🔄 Rebuild Database & AI Model](#-rebuild-database--ai-model)
 * [⚙️ How the System Works](#️-how-the-system-works)
 * [👨‍💻 Developer](#-developer)
 
@@ -38,98 +38,6 @@ The system enables teachers and administrators to manage students, classes, asse
 * Support early academic intervention
 * Analyze classroom performance
 * Improve educational decision-making
-
----
-
-## 🚀 Installation & Setup
-
-### 1. Clone Repository
-
-```bash
-git clone https://github.com/Laykimhoung/student-performance-prediction.git
-cd student-performance-prediction
-```
-
-### 2. Create Virtual Environment
-
-```bash
-py -3.11 -m venv .venv
-```
-
-### 3. Activate Environment
-
-Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-Mac/Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-### 4. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 5. Run Application
-
-```bash
-python app.py
-```
-
-> The repository already includes the database and trained AI models. Most users only need to install the requirements and run the application.
-
----
-
-## 🔄 Rebuild Database & AI Model
-
-If you want to generate a fresh demo database and retrain the AI model from scratch, follow these steps:
-
-### Step 1 — Delete Database
-
-Delete:
-
-```text
-database/eduvision.db
-```
-
-### Step 2 — Recreate Database Tables
-
-```bash
-python -m database.schema
-```
-
-### Step 3 — Generate Demo Data
-
-```bash
-python -m database.seed
-```
-
-### Step 4 — Retrain AI Models
-
-```bash
-python -m ai.trainer
-```
-
-This will automatically overwrite the existing AI model files:
-
-```text
-ai/model/risk_model.pkl
-ai/model/score_model.pkl
-```
-
-After training is completed, simply run:
-
-```bash
-python app.py
-```
-
-to start EduVision AI with the newly generated database and AI models.
 
 ---
 
@@ -217,6 +125,255 @@ EduVision AI uses Machine Learning techniques to evaluate student performance ba
 | ReportLab     | PDF Report Generation     |
 | OpenPyXL      | Excel Export              |
 
+
+---
+
+# 🚀 Installation & Setup
+
+
+## 1. Clone Repository
+
+Open **VS Code Terminal** or **Command Prompt**:
+
+```bash
+git clone https://github.com/Laykimhoung/student-performance-prediction.git
+cd student-performance-prediction
+```
+
+---
+
+## 2. Create Virtual Environment
+
+Open **VS Code Terminal** and run:
+
+```bash
+py -3.11 -m venv .venv
+```
+
+This creates an isolated Python environment for the project.
+
+---
+
+## 3. Activate Virtual Environment
+In **VS Code Terminal** and run:
+
+Windows:
+
+```bash
+.venv\Scripts\activate
+```
+
+Mac/Linux:
+
+```bash
+source .venv/bin/activate
+
+```
+If successful, you should see:
+```text
+(.venv) PS C:\YourProject\student-performance-prediction>
+```
+
+✅ This means the virtual environment is active.
+
+---
+
+### ⚠️ First-Time PowerShell Users
+
+If you receive an error similar to:
+
+```text
+running scripts is disabled on this system
+```
+
+You must allow PowerShell scripts to run.
+
+### Step A — Open PowerShell as Administrator
+
+1. Search for **PowerShell**
+2. Right-click **Windows PowerShell**
+3. Select **Run as Administrator**
+
+Run:
+
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+When prompted:
+
+```text
+Do you want to change the execution policy?
+[Y] Yes
+```
+
+Type:
+
+```text
+Y
+```
+
+and press **Enter**.
+
+---
+
+### Step B — Activate Environment
+
+Return to the **VS Code Terminal** and run:
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+If successful, you should see:
+
+```text
+(.venv) PS C:\YourProject\student-performance-prediction>
+```
+
+✅ This means the virtual environment is active.
+
+---
+
+## 4. Install Dependencies
+
+With the virtual environment activated, run in the **VS Code Terminal**:
+
+```bash
+pip install -r requirements.txt
+```
+
+### ⏳ Please Be Patient
+
+The installation may appear stuck while installing large packages. Depending on your internet speed and computer performance, installation may take:
+
+```text
+5–10 minutes
+```
+
+Do NOT close the terminal.
+
+Wait until you see:
+
+```text
+Successfully installed ...
+```
+
+before proceeding.
+
+---
+
+## 🔧 Troubleshooting Installation Issues
+
+### Problem 1: Installation Failed
+
+If package installation fails or the application reports missing modules such as:
+
+```text
+No module named 'customtkinter'
+```
+
+or
+
+```text
+No module named 'PIL'
+```
+
+recreate the virtual environment.
+
+### Step 1 — Deactivate Environment
+
+Run in **VS Code Terminal**:
+
+```powershell
+deactivate
+```
+
+### Step 2 — Delete Old Virtual Environment
+
+```powershell
+Remove-Item -Recurse -Force .venv
+```
+
+### Step 3 — Create New Virtual Environment
+
+```powershell
+py -3.11 -m venv .venv
+```
+
+### Step 4 — Activate Environment
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### Step 5 — Reinstall Dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+Wait until installation finishes completely.
+
+---
+
+## 5. Run Application
+
+Run this to start EduVision AI:
+
+```bash
+python app.py
+```
+
+If everything is installed correctly, EduVision AI will launch successfully.
+> The repository already includes the database and trained AI models. Most users only need to install the requirements and run the application.
+---
+
+
+## 🔄 Rebuild Database & AI Model
+
+If you want to generate a fresh demo database and retrain the AI model from scratch, follow these steps:
+
+### Step 1 — Delete Database
+
+Delete:
+
+```text
+database/eduvision.db
+```
+
+### Step 2 — Recreate Database Tables
+
+```bash
+python -m database.schema
+```
+
+### Step 3 — Generate Demo Data
+
+```bash
+python -m database.seed
+```
+
+### Step 4 — Retrain AI Models
+
+```bash
+python -m ai.trainer
+```
+
+This will automatically overwrite the existing AI model files:
+
+```text
+ai/model/risk_model.pkl
+ai/model/score_model.pkl
+```
+
+After training is completed, simply run:
+
+```bash
+python app.py
+```
+
+to start EduVision AI with the newly generated database and AI models.
 
 ---
 
