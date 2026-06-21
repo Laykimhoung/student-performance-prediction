@@ -1,99 +1,62 @@
-# 🎓 EduVision AI (Student Performance Prediction)
+# 🎓 EduVision AI
 
-> Student Performance Prediction System
+> **AI-Enhanced Student Performance Prediction and Management System**
 
-An AI-powered system for academic performance monitoring, risk prediction, and early intervention.
+An intelligent desktop application designed to monitor academic performance, predict at-risk students, and provide academic intervention recommendations using Machine Learning.
 
-![Status](https://img.shields.io/badge/Status-In%20Progress-orange)
-![Python](https://img.shields.io/badge/Python-3.11.x-blue)
-![Desktop App](https://img.shields.io/badge/Platform-Desktop-green)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Platform](https://img.shields.io/badge/Desktop-CustomTkinter-green)
+![Database](https://img.shields.io/badge/Database-SQLite-blue)
+![AI](https://img.shields.io/badge/AI-Scikit--Learn-orange)
+
+---
+
+## 📑 Table of Contents
+
+* [📌 Project Overview](#-project-overview)
+* [🚀 Installation & Setup](#-installation--setup)
+* [🔄 Rebuild Database & AI Model](#-rebuild-database--ai-model)
+* [✨ Core Features](#-core-features)
+* [🤖 AI Features](#-ai-features)
+* [🛠️ Technologies Used](#️-technologies-used)
+* [⚙️ How the System Works](#️-how-the-system-works)
+* [👨‍💻 Developer](#-developer)
 
 ---
 
 ## 📌 Project Overview
 
-**EduVision AI** is a modern desktop-based student management system designed to monitor academic performance, predict at-risk students, and recommend intervention strategies using Artificial Intelligence.
+**EduVision AI** is a desktop-based student management system that combines traditional academic management with Artificial Intelligence to support academic performance monitoring and early intervention.
 
-The project is inspired by modern educational analytics systems and research on AI-enhanced student performance monitoring.
+The system enables teachers and administrators to manage students, classes, assessments, and reports while utilizing Machine Learning models to identify at-risk students and generate personalized recommendations.
 
-The goal of this system is to help schools, teachers, and administrators:
+### Objectives
 
-- Monitor student academic performance
-- Detect students at academic risk
-- Generate AI-powered recommendations
-- Analyze class performance through dashboards
-- Manage multiple classes and teachers
-- Provide student self-analysis tools
-
-This project is currently **under development** and continuously improving.
+* Monitor academic performance
+* Predict student risk levels
+* Provide AI-powered recommendations
+* Support early academic intervention
+* Analyze classroom performance
+* Improve educational decision-making
 
 ---
 
-## 🚧 Project Status
-
-> **Work In Progress (WIP)**
-
-**EduVision AI** is actively being developed.
-
-Current development focus includes:
-
-- [ ] Modern Desktop UI Design
-- [ ] Role-based Authentication
-- [ ] Student Management System
-- [ ] Multi-Class Management
-- [ ] Teacher Dashboard
-- [ ] Student Prediction Sandbox
-- [ ] AI Risk Prediction Model
-- [ ] Analytics Dashboard
-- [ ] Charts & Data Visualization
-- [ ] PDF Report Generation
-- [ ] Database Architecture
-
----
-## 🛠️ Technologies Used
-
-This project is powered by the following technologies:
-
-| Technology | Purpose |
-|------------|---------|
-| Python | Core Programming Language |
-| CustomTkinter | Modern Desktop GUI |
-| SQLite | Local Database |
-| Pandas | Data Processing |
-| NumPy | AI calculations |
-| Scikit-learn | Machine Learning |
-| Matplotlib | Data Visualization |
-| Plotly | Interactive Charts |
-| ReportLab | PDF Report Generation |
-| openpyxl | Excel Report Generation |
-| Pillow | Image Processing |
-
----
 ## 🚀 Installation & Setup
 
-Follow these steps to run **EduVision AI** locally. But make sure you already have Python version **3.11.X**.
-
-### Step 1 — Clone the Repository
+### 1. Clone Repository
 
 ```bash
 git clone https://github.com/Laykimhoung/student-performance-prediction.git
 cd student-performance-prediction
 ```
 
----
-
-### Step 2 — Create a Virtual Environment​​
-
-Create a local Python virtual environment with Python 3.11:
+### 2. Create Virtual Environment
 
 ```bash
 py -3.11 -m venv .venv
 ```
 
-
----
-
-### Step 3 — Activate the Virtual Environment
+### 3. Activate Environment
 
 Windows:
 
@@ -107,191 +70,196 @@ Mac/Linux:
 source .venv/bin/activate
 ```
 
-After activation, your terminal should look similar to:
-
-```txt
-(.venv) C:\student-performance-prediction>
-```
-
----
-
-### Step 4 — Install Required Libraries
-
-Install all project dependencies:
+### 4. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-This automatically installs:
-
-- CustomTkinter
-- Pandas
-- Numpy
-- Scikit-learn
-- Matplotlib
-- Plotly
-- ReportLab
-- openpyxl
-- Pillow
-
----
-
-### Step 5 — Run the Application
-
-Start **EduVision AI**:
+### 5. Run Application
 
 ```bash
 python app.py
 ```
 
----
-## 💼 Setup Database
-
-Follow these steps to run **eduvision.db** locally.
-
----
-### Step 1 — Delete the file eduvision.db fist
-just delete that file, then we will create new for your local computer in next step.
+> The repository already includes the database and trained AI models. Most users only need to install the requirements and run the application.
 
 ---
 
-### Step 2 — Run schema.py​
+## 🔄 Rebuild Database & AI Model
 
-Create a local database table:
+If you want to generate a fresh demo database and retrain the AI model from scratch, follow these steps:
+
+### Step 1 — Delete Database
+
+Delete:
+
+```text
+database/eduvision.db
+```
+
+### Step 2 — Recreate Database Tables
 
 ```bash
 python -m database.schema
 ```
 
----
-### Step 3 — Run seed.py
-Create a fake data in database to view:
+### Step 3 — Generate Demo Data
 
 ```bash
 python -m database.seed
 ```
+
+### Step 4 — Retrain AI Models
+
+```bash
+python -m ai.trainer
+```
+
+This will automatically overwrite the existing AI model files:
+
+```text
+ai/model/risk_model.pkl
+ai/model/score_model.pkl
+```
+
+After training is completed, simply run:
+
+```bash
+python app.py
+```
+
+to start EduVision AI with the newly generated database and AI models.
+
 ---
 
 ## ✨ Core Features
 
-### 👑 Admin System
+### 👑 Admin Module
+Full system access:
 
-- Manage teachers
-- Create and manage classes
-- Assign teachers to multiple classes
-- Monitor all students
-- View analytics and reports
-- Manage system-wide settings
+* Secure login system
+* Manage teachers
+* Manage classes
+* Assign teachers to classes
+* Monitor student records
+* Add, edit, and delete students
+* System overview dashboard
 
-### 👨‍🏫 Teacher System
+### 👨‍🏫 Teacher Module
+Class-level access:
 
-- Secure login
-- Access assigned classes
-- Add, edit, delete students
-- Track student performance
-- Generate AI predictions
-- Export reports
-- View analytics dashboard
+* Secure login system
+* Manage assigned classes
+* Record assessment scores
+* Generate AI predictions
+* Export Class Inforamtion to PDF and Excel
+* Export reports to PDF
+* View classroom analytics
 
-### 🎓 Student System
+### 🎓 Student Prediction Sandbox
+Prediction-only access:
 
-- No login required
-- Select available class
-- Enter academic information
-- Instantly receive AI predictions
-- View intervention recommendations
+* No login required
+* Enter assessment scores manually
+* Receive instant AI predictions
+* View personalized recommendations
+* Export prediction report as PDF
 
-> Student prediction mode acts as a **sandbox** and does **not save data** to the database.
+> Student Sandbox Mode is used for demonstration and self-analysis purposes. Data entered here is not stored in the database.
 
 ---
 
 ## 🤖 AI Features
 
-**EduVision AI** uses machine learning techniques to:
+EduVision AI uses Machine Learning techniques to evaluate student performance based on multiple academic indicators.
 
-- Predict academic risk levels
-- Detect weak academic performance
-- Suggest intervention strategies
-- Generate academic insights
+### Prediction Factors
 
-Prediction outputs include:
+* Attendance
+* Quiz
+* Homework
+* Assignment
+* Midterm Exam
+* Final Exam
+* Participation
+* Project
+* Behavior
 
-- Low Risk
-- Medium Risk
-- High Risk
-- Risk Probability Score
-- Personalized Recommendations
+### AI Outputs
 
-Example:
+* Predicted Academic Score
+* Risk Classification
+* Performance Analysis
+* Personalized Recommendations
 
-```text
-Risk Level: Medium
+### Risk Levels
 
-Risk Score: 63%
-
-Recommendation:
-• Improve attendance
-• Increase study time
-• Join tutoring sessions
-```
-
----
-
-## 📊 Analytics & Visualization
-
-The system includes interactive dashboards and data visualization:
-
-- Student Risk Distribution
-- Attendance Trends
-- Performance Analysis
-- Class Comparison
-- High-Risk Student Detection
-- AI Insights Dashboard
-
-Charts supported:
-
-- Pie Charts
-- Line Graphs
-- Bar Charts
-- Performance Comparisons
+| Risk Level     | Description                   |
+| -------------- | ----------------------------- |
+| 🟢 Low Risk    | Student is performing well    |
+| 🟡 Medium Risk | Student requires monitoring   |
+| 🔴 High Risk   | Student requires intervention |
 
 ---
 
-## 🔐 System Roles
+## 🛠️ Technologies Used
 
-### Admin
+| Technology    | Purpose                   |
+| ------------- | ------------------------- |
+| Python 3.11   | Core Programming Language |
+| CustomTkinter | Modern Desktop GUI        |
+| SQLite        | Local Database            |
+| Pandas        | Data Processing           |
+| NumPy         | Numerical Computation     |
+| Scikit-Learn  | Machine Learning          |
+| Matplotlib    | Data Visualization        |
+| ReportLab     | PDF Report Generation     |
+| OpenPyXL      | Excel Export              |
 
-Full system access:
 
-- Manage teachers
-- Manage classes
-- View analytics
-- Monitor system performance
+---
 
-### Teacher
+## ⚙️ How the System Works
 
-Class-based access:
+### Step 1 — Data Collection
 
-- Manage assigned classes
-- Add and update student data
-- Generate reports
-- View AI predictions
+Teachers enter student assessment scores into the system.
 
-### Student
+### Step 2 — Academic Evaluation
 
-Quick self-analysis mode:
+The system calculates student performance metrics and academic indicators.
 
-- Select class
-- Enter academic metrics
-- View instant AI feedback
+### Step 3 — AI Prediction
+
+The trained Machine Learning model analyzes student performance patterns and predicts:
+
+* Academic Score
+* Risk Level
+* Intervention Priority
+
+### Step 4 — Recommendation Generation
+
+The recommendation engine generates personalized improvement suggestions based on student weaknesses.
+
+### Step 5 — Reporting
+
+Users can export performance reports and prediction results in PDF format.
 
 ---
 
 ## 👨‍💻 Developer
 
-**Lay Kimhoung (Xakuraii)**
+### Lay Kimhoung (Xakuraii)
 
 Computer Science Student
 
+**Project:** EduVision AI
+**Version:** 1.0
+**Year:** 2026
+
 ---
+
+### Academic Research Topic
+
+**Artificial Intelligence in Student Management Systems to Enhance Academic Performance Monitoring and Intervention**
