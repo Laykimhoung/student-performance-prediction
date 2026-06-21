@@ -119,7 +119,7 @@ for student_id, in students:
 
     risk = random.choices(
         ["Low", "Medium", "High"],
-        weights=[60, 25, 15],
+        weights=[40, 30, 30],
         k=1
     )[0]
 
@@ -149,15 +149,34 @@ for student_id, in students:
 
     else:
 
-        quiz = random.randint(30, 70)
-        homework = random.randint(30, 70)
-        attendance = random.randint(30, 70)
-        assignment = random.randint(30, 70)
-        midterm = random.randint(25, 70)
-        final = random.randint(30, 70)
-        participation = random.randint(30, 80)
-        project = random.randint(30, 70)
-        behavior = random.randint(50, 90)
+        high_type = random.choice(
+            ["weak", "very_weak", "critical"]
+        )
+
+        if high_type == "weak":
+
+            low = 20
+            high = 49
+
+        elif high_type == "very_weak":
+
+            low = 10
+            high = 30
+
+        else:
+
+            low = 1
+            high = 15
+
+        quiz = random.randint(low, high)
+        homework = random.randint(low, high)
+        attendance = random.randint(low, high)
+        assignment = random.randint(low, high)
+        midterm = random.randint(low, high)
+        final = random.randint(low, high)
+        participation = random.randint(low, high)
+        project = random.randint(low, high)
+        behavior = random.randint(low, high)
 
     average = round(
         (
