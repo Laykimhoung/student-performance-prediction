@@ -17,6 +17,7 @@ An intelligent desktop application designed to monitor academic performance, pre
 * [✨ Core Features](#-core-features)
 * [🤖 AI Features](#-ai-features)
 * [🛠️ Technologies Used](#️-technologies-used)
+* [🖼 User Interface](#️-user-interface)
 * [🚀 Installation & Setup](#-installation--setup)
 * [🔄 Rebuild Database & AI Model](#-rebuild-database--ai-model)
 * [⚙️ How the System Works](#️-how-the-system-works)
@@ -125,6 +126,16 @@ EduVision AI uses Machine Learning techniques to evaluate student performance ba
 | ReportLab     | PDF Report Generation     |
 | OpenPyXL      | Excel Export              |
 
+
+---
+## 🖼User Interface
+
+<img width="1920" height="1080" alt="14" src="https://github.com/user-attachments/assets/e21e40eb-2196-45e2-876d-1391aad5045f" />
+<img width="1920" height="1080" alt="15" src="https://github.com/user-attachments/assets/0d596674-ff2e-4628-9395-0a5da9abfe3f" />
+<img width="1920" height="1080" alt="16" src="https://github.com/user-attachments/assets/b8e68f93-a43e-48ff-b062-40eabf213c50" />
+<img width="1920" height="1080" alt="17" src="https://github.com/user-attachments/assets/bfd6094a-753c-4613-95b8-cfbc9260f837" />
+<img width="1920" height="1080" alt="18" src="https://github.com/user-attachments/assets/73df297b-ae41-4772-aa01-af738596ea86" />
+<img width="1920" height="1080" alt="19" src="https://github.com/user-attachments/assets/8fc98ecf-c8e5-431b-8d1e-a2fd4ecfc7aa" />
 
 ---
 
